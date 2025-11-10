@@ -5,7 +5,6 @@ type Props = TextInputProps & {
     label: string,
     errorText?: string,
     icon?: keyof typeof MaterialIcons.glyphMap;
-
 }
 
 export default function TextField( { label, errorText, icon } : Props ) {
