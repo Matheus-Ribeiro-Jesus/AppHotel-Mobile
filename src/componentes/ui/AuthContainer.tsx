@@ -19,7 +19,7 @@ export default function AuthContainer({ title, subtitle, icon }: Props){
     return (
         <SafeAreaView style={global.SafeArea}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={global.keyboardAvoiding}>
-            <ScrollView style={global.container}>
+            <ScrollView contentContainerStyle={global.container}>
 
                 <View style={global.header}>
                 {!!icon && <FontAwesome6 name={icon} size={25} color="black" />}
@@ -29,7 +29,6 @@ export default function AuthContainer({ title, subtitle, icon }: Props){
 
                 <View style={global.content}>
                     {/* {childrean} */}
-                    <Text>Oi</Text>
                 </View>
 
             </ScrollView>
