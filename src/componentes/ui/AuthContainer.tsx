@@ -11,11 +11,11 @@ type Props = {
     // keyof = mudando de numeros para textos  
     // typeof dizendo que o tipo dele é fontAwesome
     icon?: keyof typeof FontAwesome6.glyphMap;
-    // children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 
-export default function AuthContainer({ title, subtitle, icon }: Props){
+export function AuthContainer({ title, subtitle, icon, children }: Props){
     return (
         <SafeAreaView style={global.SafeArea}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={global.keyboardAvoiding}>
@@ -28,7 +28,7 @@ export default function AuthContainer({ title, subtitle, icon }: Props){
                 </View>
 
                 <View style={global.content}>
-                    {/* {childrean} */}
+                    {children}
                 </View>
 
             </ScrollView>
