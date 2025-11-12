@@ -1,7 +1,9 @@
-import { RenderLogin } from "@/componentes/login"
+import RenderLogin from "@/componentes/login"
 
-export default function Login() {
-    return (
+const Login = () => {
+        return (
         <RenderLogin  />
     )
 }
+
+export default Login;

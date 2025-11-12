@@ -15,7 +15,7 @@ type Props = {
 }
 
 
-export function AuthContainer({ title, subtitle, icon, children }: Props){
+const AuthContainer = ({ title, subtitle, icon, children }: Props) => {
     return (
         <SafeAreaView style={global.SafeArea}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={global.keyboardAvoiding}>
@@ -37,3 +37,4 @@ export function AuthContainer({ title, subtitle, icon, children }: Props){
     );
 
 }
+export default AuthContainer;
