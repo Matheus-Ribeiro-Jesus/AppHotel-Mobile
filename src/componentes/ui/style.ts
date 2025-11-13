@@ -4,7 +4,7 @@ const { width, height } = Dimensions.get("window");
 export const global = StyleSheet.create({
     SafeArea: {
         flex: 1,
-        backgroundColor: "#ffff"
+        backgroundColor: "#faf6f6ff"
     },
     keyboardAvoiding: {
         flex: 1,
@@ -37,8 +37,8 @@ export const global = StyleSheet.create({
     content: {
         backgroundColor: "#fff", 
         borderRadius: 10,
-        padding: width * 0.02,
-        elevation: 10, 
+        padding: width * 0.08,
+        elevation: 8, 
         shadowColor: "black",
 
     },
@@ -85,12 +85,36 @@ export const global = StyleSheet.create({
         paddingHorizontal: width * 0.02,
 
     },
+
+    eyeIcon: {
+        position: "absolute",
+        right: 12,
+        top: 39,
+
+    },
+
     errorText: {
         color: "red",
         fontSize: 13,
         marginTop: height * 0.01,
         fontWeight: "600",
         marginLeft: height * 0.01,
+    },
+
+    primaryButton: {
+        backgroundColor: "#000000ff",
+        borderRadius: 10,
+        alignItems: "center",
+        padding: width * 0.025,
+    },
+
+    primaryButtonDisabled: {
+        backgroundColor: "#414141ff",
+        borderRadius: 10,
+    },
+
+    primaryButtonText: { 
+        color: "#fff"
     }
 
 

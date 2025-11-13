@@ -20,6 +20,7 @@ const TextField = ({ label, errorText, icon, style, ...restInputProps } : Props)
                 )}
                 <TextInput
                     keyboardAppearance="dark"
+                    placeholderTextColor="#979797ff"
                     style={[global.input, style]}
                     {...restInputProps}
                 />
