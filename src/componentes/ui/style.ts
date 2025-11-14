@@ -4,7 +4,6 @@ const { width, height } = Dimensions.get("window");
 export const global = StyleSheet.create({
     SafeArea: {
         flex: 1,
-        backgroundColor: "#faf6f6ff"
     },
     keyboardAvoiding: {
         flex: 1,
@@ -23,27 +22,32 @@ export const global = StyleSheet.create({
     },
 
     title: {
+        color: "white",
         fontSize: 20,
         fontWeight: "800",
     },
 
     subtitle: {
         fontSize: 17,
-        color: "blue",
+        color: "white",
         marginTop: height * 0.02,
 
     },
 
     content: {
-        backgroundColor: "#fff", 
+        backgroundColor: "transparent",
+        marginTop: width * 0.15,
         borderRadius: 10,
         padding: width * 0.08,
-        elevation: 8, 
         shadowColor: "black",
+        overflow: "hidden",
+        shadowOpacity: 20,
+
 
     },
 
     inputGroup: {
+        color: "#fff",
         marginBottom: height * 0.02,
         
     },
@@ -51,7 +55,7 @@ export const global = StyleSheet.create({
     label: { 
         fontSize: 15,
         fontWeight: "600",
-        color: "#2b2a2aff",
+        color: "#ffffffff",
         marginBottom: height * 0.01,
 
 
@@ -62,7 +66,7 @@ export const global = StyleSheet.create({
         paddingLeft: width * 0.02,
         alignItems: "center",
         borderWidth: 1,
-        borderColor: "#363636ff",
+        borderColor: "#0b0a0a76",
         borderRadius: 10,
         
     },
@@ -80,7 +84,7 @@ export const global = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 15,
-        color: "#000",
+        color: "#eae8e8ff",
         fontWeight: "600",
         paddingHorizontal: width * 0.02,
 

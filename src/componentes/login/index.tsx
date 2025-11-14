@@ -7,7 +7,7 @@ import { global } from "../ui/style";
 const RenderLogin = () => {
   return (
     <AuthContainer
-      title="Bem-vindo"
+      title="Bem-vindo ao Transilvania"
       subtitle="Faça seu login para continuar"
       icon="hotel"
       >

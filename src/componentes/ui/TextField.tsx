@@ -15,12 +15,12 @@ const TextField = ({ label, errorText, icon, style, ...restInputProps } : Props)
             <View style={[ global.inputIcon, errorText ? global.inputError : null ]}>
                 {!! icon && (
                     <View>
-                        <MaterialIcons name={icon} size={23} color="#363636ff" />
+                        <MaterialIcons name={icon} size={23} color="#cfccccff" />
                     </View>
                 )}
                 <TextInput
                     keyboardAppearance="dark"
-                    placeholderTextColor="#979797ff"
+                    placeholderTextColor="#fff"
                     style={[global.input, style]}
                     {...restInputProps}
                 />
