@@ -36,9 +36,9 @@ export const global = StyleSheet.create({
 
     content: {
         backgroundColor: "transparent",
-        marginTop: width * 0.15,
-        borderRadius: 10,
-        padding: width * 0.08,
+        marginTop: width * 0.02,
+        borderRadius: 20,
+        padding: width * 0.05,
         shadowColor: "black",
         overflow: "hidden",
         shadowOpacity: 20,
@@ -118,7 +118,9 @@ export const global = StyleSheet.create({
     },
 
     primaryButtonText: { 
-        color: "#fff"
+        fontSize: 17,
+        color: "#fff",
+        fontWeight: "600"
     }
 
 
