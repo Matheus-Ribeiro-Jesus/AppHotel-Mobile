@@ -11,16 +11,12 @@ const PasswordField = (props: Props) => {
     return (
         <View>
             <TextField
-
             {...props}
-
             icon={props.icon ?? "lock"}
             secureTextEntry={!show}
             autoCapitalize="none"
             autoCorrect={false}
-
             />
-
             <TouchableOpacity style={global.eyeIcon} onPress={() => setShow((showTrue) => !showTrue)}>
                 <Ionicons name={show ? "eye-outline" : "eye-off-outline"} size={23} color="#000"/>
             </TouchableOpacity>

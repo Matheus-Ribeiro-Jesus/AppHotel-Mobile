@@ -5,5 +5,4 @@ const Register = () => {
         <RenderRegister />
     )
 }
-
 export default Register;

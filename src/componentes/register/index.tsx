@@ -4,6 +4,7 @@ import PasswordField from "../ui/PasswordField";
 import { TouchableOpacity, Text, View, Dimensions } from "react-native";
 import { register } from "@/componentes/register/style";
 import { useRouter } from "expo-router";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const RenderRegister = () => {
     const router = useRouter();
@@ -12,7 +13,10 @@ const RenderRegister = () => {
         <AuthContainer
         title="Cadastro"
         subtitle="Transilvania"
+        headerLeft={<TouchableOpacity onPress={() => router.back()}><Icon name="arrow-back" size={28} color="#fff" />
+        </TouchableOpacity>}
         >
+
         <TextField
         label="Nome"
         placeholder="Digite seu nome"
@@ -56,7 +60,7 @@ const RenderRegister = () => {
 
         <View style={{ alignItems: "center", marginTop: height * 0.04}}>
             <TouchableOpacity onPress={() => router.back()}>
-                <Text style={{color: "white", fontWeight: "600", fontSize: 16 }}> Já possui uma conta?<Text style={{color: "orange"}}> Faça Login</Text></Text>
+                <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}> Já possui uma conta?<Text style={{color: "grey"}}> Faça Login</Text></Text>
             </TouchableOpacity>
         </View>
         

@@ -14,33 +14,35 @@ const RenderLogin = () => {
       title="Bem-vindo ao Transilvania"
       subtitle="Faça seu login para continuar"
       icon="hotel"
-      >
-      <TextField 
-      label="Email" 
-      icon="email"
-      placeholder="user@email.com"
-      keyboardType="email-address"
+    >
+      <TextField
+        label="Email"
+        icon="email"
+        placeholder="user@email.com"
+        keyboardType="email-address"
       />
-    
-     <PasswordField 
-      label="Senha"
-      icon="lock"
-      placeholder="*********"
-     />
 
-     <TouchableOpacity style={[global.primaryButton]}>
-      <Text style={global.primaryButtonText}>Entrar</Text>
-     </TouchableOpacity>
+      <PasswordField
+        label="Senha"
+        icon="lock"
+        placeholder="*********"
+      />
 
-     <View style={ { alignItems: "center", marginTop: height * 0.04 } }>
+      <TouchableOpacity style={[global.primaryButton]}>
+        <Text style={global.primaryButtonText}>Entrar</Text>
+      </TouchableOpacity>
+
+      <View style={{ alignItems: "center", marginTop: height * 0.04 }}>
         <TouchableOpacity onPress={() => router.push("/(auth)/resetPassword")}>
-            <Text style={ { color: "white", fontWeight: "600", fontSize: 16 } }>Esqueci minha senha</Text>
+          <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>Esqueci minha senha</Text>
         </TouchableOpacity>
-        <View style={ { backgroundColor: "white", width: width * 0.5, height: height * 0.001, borderRadius: 10, marginTop: height * 0.03 } }></View>
+
+        <View style={{ backgroundColor: "white", width: width * 0.5, height: height * 0.001, borderRadius: 10, marginTop: height * 0.03 }}></View>
         <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-            <Text style={ { color: "white", fontWeight: "600", fontSize: 16, marginTop: height * 0.02 } }>Não possui uma conta? Cadastre-se agora! </Text>
+          <Text style={{ color: "white", fontWeight: "600", fontSize: 16, marginTop: height * 0.02 }}>Não possui uma conta? Cadastre-se agora! </Text>
         </TouchableOpacity>
-     </View>
+        
+      </View>
 
     </AuthContainer>
   )

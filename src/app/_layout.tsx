@@ -7,5 +7,4 @@ const RootLayout = () => {
 
     return <Slot/>
 }
-
 export default RootLayout;

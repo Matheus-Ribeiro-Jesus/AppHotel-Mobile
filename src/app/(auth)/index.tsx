@@ -5,5 +5,4 @@ const Login = () => {
         <RenderLogin  />
     )
 }
-
 export default Login;
