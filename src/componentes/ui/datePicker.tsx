@@ -1,48 +1,57 @@
 import { useState } from "react";
-import { TouchableOpacity, View, Text, Modal } from "react-native";
+import { TouchableOpacity, View, Text, Modal, Platform } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { picker } from "@/componentes/ui/picker";
-import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 
 const RenderDatePicker = () => {
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState("18/11/2025");
+  const [date, setDate] = useState(new Date());
 
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
-  const startDate = getFormatedDate(tomorrow, "YYYY/MM/DD");
-
-  function handleOnPress() {
-    setOpen(!open);
-  }
-
-  function handleChange(selectedDate: string) {
-    setDate(selectedDate);
-  }
+  const onChange = (_: any, selectedDate?: Date) => {
+    if (Platform.OS === "android") setOpen(false);
+    if (selectedDate) setDate(selectedDate);
+  };
 
   return (
     <View>
-      <TouchableOpacity onPress={handleOnPress}>
+      <TouchableOpacity onPress={() => setOpen(true)}>
         <Text>Open</Text>
       </TouchableOpacity>
 
-      <Modal animationType="slide" transparent={true} visible={open}>
-        <View style={picker.centerView}>
-          <View style={picker.modalView}>
-            <DatePicker
-              mode="calendar"
-              selected={date}
-              minimumDate={startDate}
-              onSelectedChange={handleChange}
-            />
+      {Platform.OS === "ios" && (
+        <Modal visible={open} transparent={true} animationType="slide">
+          <View style={picker.centerView}>
+            <View style={picker.modalView}>
+              <DateTimePicker
+                value={date}
+                minimumDate={tomorrow}
+                mode="date"
+                display="spinner"
+                locale="pt-BR"
+                onChange={onChange}
+              />
 
-            <TouchableOpacity onPress={handleOnPress}>
-              <Text>Close</Text>
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => setOpen(false)}>
+                <Text>Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
+
+      {Platform.OS === "android" && open && (
+        <DateTimePicker
+          value={date}
+          minimumDate={tomorrow}
+          mode="date"
+          locale="pt-BR"
+          onChange={onChange}
+        />
+      )}
     </View>
   );
 };

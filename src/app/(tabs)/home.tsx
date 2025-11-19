@@ -1,13 +1,20 @@
 import { View, Text, StyleSheet } from 'react-native';
 import RenderDatePicker from "@/componentes/ui/datePicker";
+import RenderRoomCard from "@/componentes/ui/RoomCard"
 
 
 
-export default function Tab() {
+const Tab = () => {
   return (
     <View style={styles.container}>
 
-      <RenderDatePicker />
+      {/* <RenderDatePicker /> */}
+
+      <RenderRoomCard />
+
+    
+
+      
 
     </View>
   );
@@ -20,3 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+
+export default Tab;
