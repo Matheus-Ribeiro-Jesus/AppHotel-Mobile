@@ -2,13 +2,14 @@ import { Image, StyleSheet, Dimensions} from "react-native";
 const { width, height } = Dimensions.get("window");
 
 export const stylesRoom = StyleSheet.create({
-  container: {
-    width: "60%",
+container: {
+    width: width * 0.50,               
     backgroundColor: "#fff",
     borderRadius: 12,
     overflow: "hidden",
-    marginVertical: 10,
-    elevation: 4, 
+    marginRight: 16,           
+    elevation: 4,
+    height: height * 0.32,
     shadowColor: "#000",
     shadowOpacity: 0.15,
     shadowRadius: 6,
@@ -17,7 +18,7 @@ export const stylesRoom = StyleSheet.create({
 
   image: {
     width: "100%",
-    height: width * 0.40,
+    height: 140,               
   },
 
   infoSection: {

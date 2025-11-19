@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Text, Modal, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { picker } from "@/componentes/ui/picker";
 
-const RenderDatePicker = () => {
+const RenderDatePicker = ({ label }: {label: string}) => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(new Date());
 
@@ -19,7 +19,7 @@ const RenderDatePicker = () => {
   return (
     <View>
       <TouchableOpacity onPress={() => setOpen(true)}>
-        <Text>Open</Text>
+        <Text>{label}</Text>
       </TouchableOpacity>
 
       {Platform.OS === "ios" && (
@@ -36,7 +36,7 @@ const RenderDatePicker = () => {
               />
 
               <TouchableOpacity onPress={() => setOpen(false)}>
-                <Text>Close</Text>
+                <Text>{label}</Text>
               </TouchableOpacity>
             </View>
           </View>

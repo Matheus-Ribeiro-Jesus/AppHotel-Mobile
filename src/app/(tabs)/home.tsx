@@ -1,32 +1,28 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import RenderDatePicker from "@/componentes/ui/datePicker";
 import RenderRoomCard from "@/componentes/ui/RoomCard"
 
-
-
 const Tab = () => {
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, paddingVertical: 20, alignItems: 'center' }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          flexDirection: "row",
+          paddingHorizontal: 16,
+        }}
+      >
+        <RenderRoomCard />
+        <RenderRoomCard />
+        <RenderRoomCard />
+      </ScrollView>
 
-      {/* <RenderDatePicker /> */}
-
-      <RenderRoomCard />
-
-    
-
-      
-
+      <RenderDatePicker label='Data de check-in' />
+      <RenderDatePicker label='Data de check-out' />
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
+};
 
 export default Tab;
+
