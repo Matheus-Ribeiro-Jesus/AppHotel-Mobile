@@ -9,12 +9,22 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const RenderRegister = () => {
     const router = useRouter();
     const { width, height } = Dimensions.get("window");
+
     return(
-        <AuthContainer
-        title="Cadastro"
-        subtitle="Transilvania"
+        <AuthContainer 
+        title="Cadastro de Usuário"
+        subtitle="Hotel Transilvania"
+        logo={require("../../../assets/images/profile.png")}
         headerLeft={<TouchableOpacity onPress={() => router.back()}><Icon name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>}
+        contentStyle={{
+            marginTop: height * 0.01,
+            height: height * 0.84,
+        }}
+
+        titleStyle={{
+            marginTop: height * 0.005
+        }}
         >
 
         <TextField
@@ -31,7 +41,7 @@ const RenderRegister = () => {
 
         <TextField
         label="Telefone"
-        placeholder="99.99999-9999"
+        placeholder="(15) 00000-0000"
         keyboardType="default"
         />
         
@@ -60,7 +70,7 @@ const RenderRegister = () => {
 
         <View style={{ alignItems: "center", marginTop: height * 0.04}}>
             <TouchableOpacity onPress={() => router.back()}>
-                <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}> Já possui uma conta?<Text style={{color: "grey"}}> Faça Login</Text></Text>
+                <Text style={{ color: "black", fontWeight: "600", fontSize: 16 }}> Já possui uma conta?<Text style={{color: "grey"}}> Faça Login</Text></Text>
             </TouchableOpacity>
         </View>
         

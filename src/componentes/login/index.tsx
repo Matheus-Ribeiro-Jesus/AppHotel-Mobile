@@ -12,8 +12,12 @@ const RenderLogin = () => {
   return (
     <AuthContainer
       title="Bem-vindo ao Transilvania"
-      subtitle="Faça seu login para continuar"
-      icon="hotel"
+      subtitle="Por favor insira seus dados"
+      contentStyle={{
+        marginTop: height * 0.03,
+        height: height * 0.50,
+      }}
+      logo={require("../../../assets/images/profile.png")}
     >
       <TextField
         label="Email"
@@ -34,14 +38,14 @@ const RenderLogin = () => {
 
       <View style={{ alignItems: "center", marginTop: height * 0.04 }}>
         <TouchableOpacity onPress={() => router.push("/(auth)/resetPassword")}>
-          <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>Esqueci minha senha</Text>
+          <Text style={{ color: "black", fontWeight: "600", fontSize: 16 }}>Esqueci minha senha</Text>
         </TouchableOpacity>
 
-        <View style={{ backgroundColor: "white", width: width * 0.5, height: height * 0.001, borderRadius: 10, marginTop: height * 0.03 }}></View>
+        <View style={{ backgroundColor: "black", width: width * 0.5, height: height * 0.001, borderRadius: 10, marginTop: height * 0.03 }}></View>
         <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
-          <Text style={{ color: "white", fontWeight: "600", fontSize: 16, marginTop: height * 0.02 }}>Não possui uma conta? Cadastre-se agora! </Text>
+          <Text style={{ color: "black", fontWeight: "600", fontSize: 16, marginTop: height * 0.02 }}>Não possui uma conta? Cadastre-se agora! </Text>
         </TouchableOpacity>
-        
+
       </View>
 
     </AuthContainer>

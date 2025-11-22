@@ -11,5 +11,12 @@ export const register = StyleSheet.create({
 
     textContent: {
         color: "white",
-    }
+    },
+
+    container: {
+        paddingTop: height * 0.03,
+        paddingBottom: 0,
+    },
+
+
 })
