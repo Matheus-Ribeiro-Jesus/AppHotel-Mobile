@@ -5,22 +5,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { global } from "./style";
 
 type Props = {
-    title: string;
+    title?: string;
     subtitle?: string;
     children: React.ReactNode;
     headerLeft?: React.ReactNode;
 
     containerStyle?: any;
-    contentStyle?: any;
     headerStyle?: any;
-    titleStyle?: any;
     subtitleStyle?: any;
     logo?: any;
     logoStyle?: any;
 
 };
 
-const AuthContainer = ({ title, subtitle, children, headerLeft, containerStyle, contentStyle, titleStyle, logo, logoStyle }: Props) => {
+const AuthContainer = ({ title, subtitle, children, headerLeft, containerStyle, logo, logoStyle }: Props) => {
     return (
         <SafeAreaView style={global.SafeArea}>
             <KeyboardAvoidingView
@@ -43,11 +41,13 @@ const AuthContainer = ({ title, subtitle, children, headerLeft, containerStyle, 
                                 resizeMode="cover"
                             />
                         )}
-                        <Text style={[global.title, titleStyle]}>{title}</Text>
+
+                        {!!title && <Text style={global.title}>{title}</Text>} 
                         {!!subtitle && <Text style={global.subtitle}>{subtitle}</Text>}
+
                     </View>
 
-                    <View style={[global.content, contentStyle]}>
+                    <View>
                         {children}
                     </View>
 

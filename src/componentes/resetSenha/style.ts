@@ -9,5 +9,8 @@ export const resetPass = StyleSheet.create({
         padding: width * 0.030,
         textAlign: "center",
         fontWeight:  "600",
+    },
+    content: { 
+        height: height * 0.52,
     }
 })

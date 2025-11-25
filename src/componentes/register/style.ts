@@ -18,5 +18,9 @@ export const register = StyleSheet.create({
         paddingBottom: 0,
     },
 
+    inputs: {
+        height: height * 0.99,
+    }
+
 
 })

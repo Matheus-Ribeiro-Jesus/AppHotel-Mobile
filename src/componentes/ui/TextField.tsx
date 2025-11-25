@@ -1,36 +1,39 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { Text, TextInput, TextInputProps, View } from "react-native";
 import { global } from "@/componentes/ui/style";
 
-type Props = TextInputProps & {
-    label: string,
-    errorText?: string,
-    icon?: keyof typeof MaterialIcons.glyphMap;
-}
+type NameIcon =
+  | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }
+  | { lib: "FontAwesome6"; name: keyof typeof FontAwesome6.glyphMap };
 
-const TextField = ({ label, errorText, icon, style, ...restInputProps } : Props) =>{
-    return (
-        <View style={global.inputGroup}>
-            <Text style={global.label}>{label}</Text>
-            <View style={[ global.inputIcon, errorText ? global.inputError : null ]}>
-                {!! icon && (
-                    <View>
-                        <MaterialIcons name={icon} size={23} color="#0e0d0dff" />
-                    </View>
-                )}
-                <TextInput
-                    keyboardAppearance="dark"
-                    placeholderTextColor="#0f0f0fff"
-                    style={[global.input, style]}
-                    {...restInputProps}
-                />
-            </View>
-            {!! errorText &&
-                <Text style={global.errorText}>{errorText}</Text>
-            }
-        </View>
-    )
-    
+type Props = TextInputProps & {
+  label: string;
+  errorText?: string;
+  icon?: NameIcon;
+};
+
+const TextField = ({ label, errorText, icon, style, ...restInputProps }: Props) => {
+  return (
+    <View style={global.inputGroup}>
+      <Text style={global.label}>{label}</Text>
+      <View style={[global.inputIcon, errorText ? global.inputError : null]}>
+        {!!icon && (
+          <View>
+            {icon.lib === "MaterialIcons" && (
+              <MaterialIcons name={icon.name} size={23} color="black" />
+            )}
+          </View>
+        )}
+        <TextInput
+          keyboardAppearance="dark"
+          placeholderTextColor="#0f0f0fff"
+          style={[global.input, style]}
+          {...restInputProps}
+        />
+      </View>
+      {!!errorText && <Text style={global.errorText}>{errorText}</Text>}
+    </View>
+  );
 };
 
 export default TextField;

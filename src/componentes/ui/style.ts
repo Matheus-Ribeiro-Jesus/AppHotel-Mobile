@@ -11,7 +11,7 @@ export const global = StyleSheet.create({
     },
 
     container: {
-        paddingTop: height * 0.06,
+        paddingTop: height * 0.02,
     },
 
     header: {
@@ -34,7 +34,7 @@ export const global = StyleSheet.create({
 
     content: {
         flex: 1,
-        marginTop: height * 0.08,
+        marginTop: height * 0.02,
         backgroundColor: "#ffffffff",
         padding: width * 0.05,
         shadowColor: "black",
@@ -42,7 +42,7 @@ export const global = StyleSheet.create({
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         shadowOpacity: 20,
-        height: height * 0.58,
+        height: height * 0.60,
     },
 
     inputGroup: {
