@@ -1,16 +1,25 @@
-import { View, Text, StyleSheet } from 'react-native';
+import RenderRoomCard from "@/componentes/ui/RoomCard";
+import { ScrollView, View } from 'react-native';
 
-export default function Tab() {
+const Tab = () => {
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, paddingVertical: 20, alignItems: 'center' }}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          flexDirection: "row",
+          paddingHorizontal: 16,
+        }}
+      >
+        <RenderRoomCard />
+        <RenderRoomCard />
+        <RenderRoomCard />
+        
+      </ScrollView>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+export default Tab;
+

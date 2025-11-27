@@ -1,10 +1,11 @@
-import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { Text, TextInput, TextInputProps, View } from "react-native";
 import { global } from "@/componentes/ui/style";
 
 type NameIcon =
   | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }
-  | { lib: "FontAwesome6"; name: keyof typeof FontAwesome6.glyphMap };
+  | { lib: "FontAwesome5", name: keyof typeof FontAwesome5.glyphMap }
+  | { lib: "FontAwesome6", name: keyof typeof FontAwesome6.glyphMap };
 
 type Props = TextInputProps & {
   label: string;
