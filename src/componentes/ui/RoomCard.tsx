@@ -13,6 +13,7 @@ const RenderRoomCard = () => {
         <Text style={stylesRoom.title}>DeLuxe</Text>
         <Text style={stylesRoom.price}>R$ 200 por 2 noites</Text>
       </View>
+      
     </View>
   );
 };

@@ -32,7 +32,7 @@ const RenderLogin = () => {
         />
         <TouchableOpacity
           style={[global.primaryButton]}
-          onPress={() => router.push("/(tabs)/explorer")}
+          onPress={() => router.push("/(tabs)/reserva")}
         >
           <Text style={global.primaryButtonText}>Entrar</Text>
         </TouchableOpacity>

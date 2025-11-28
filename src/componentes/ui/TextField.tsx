@@ -4,8 +4,8 @@ import { global } from "@/componentes/ui/style";
 
 type NameIcon =
   | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }
-  | { lib: "FontAwesome5", name: keyof typeof FontAwesome5.glyphMap }
-  | { lib: "FontAwesome6", name: keyof typeof FontAwesome6.glyphMap };
+  | { lib: "FontAwesome5"; name: keyof typeof FontAwesome5.glyphMap }
+  | { lib: "FontAwesome6"; name: keyof typeof FontAwesome6.glyphMap };
 
 type Props = TextInputProps & {
   label: string;
@@ -13,7 +13,13 @@ type Props = TextInputProps & {
   icon?: NameIcon;
 };
 
-const TextField = ({ label, errorText, icon, style, ...restInputProps }: Props) => {
+const TextField = ({
+  label,
+  errorText,
+  icon,
+  style,
+  ...restInputProps
+}: Props) => {
   return (
     <View style={global.inputGroup}>
       <Text style={global.label}>{label}</Text>
@@ -22,6 +28,14 @@ const TextField = ({ label, errorText, icon, style, ...restInputProps }: Props) 
           <View>
             {icon.lib === "MaterialIcons" && (
               <MaterialIcons name={icon.name} size={23} color="black" />
+            )}
+
+            {icon.lib === "FontAwesome5" && (
+              <FontAwesome5 name={icon.name} size={20} color="black" />
+            )}
+
+            {icon.lib === "FontAwesome6" && (
+              <FontAwesome6 name={icon.name} size={20} color="black" />
             )}
           </View>
         )}

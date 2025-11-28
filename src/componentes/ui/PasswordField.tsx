@@ -12,7 +12,7 @@ const PasswordField = (props: Props) => {
         <View>
             <TextField
             {...props}
-            icon={props.icon ?? "lock"}
+            icon={{ lib: "MaterialIcons", name: "lock" }}
             secureTextEntry={!show}
             autoCapitalize="none"
             autoCorrect={false}

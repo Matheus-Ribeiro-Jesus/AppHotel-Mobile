@@ -15,12 +15,14 @@ type Props = {
     subtitleStyle?: any;
     logo?: any;
     logoStyle?: any;
+    SafeArea2?: any;
+
 
 };
 
-const AuthContainer = ({ title, subtitle, children, headerLeft, containerStyle, logo, logoStyle }: Props) => {
+const AuthContainer = ({ title, subtitle, children, headerLeft, containerStyle, logo, logoStyle, SafeArea2}: Props) => {
     return (
-        <SafeAreaView style={global.SafeArea}>
+        <SafeAreaView style={[global.SafeArea, SafeArea2]}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={global.keyboardAvoiding}
