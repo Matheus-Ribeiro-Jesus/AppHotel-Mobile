@@ -1,14 +1,16 @@
-import { Image, StyleSheet, Dimensions} from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
 const { width, height } = Dimensions.get("window");
 
 export const stylesRoom = StyleSheet.create({
 container: {
     width: width * 0.50,               
     backgroundColor: "#fff",
-    borderRadius: 12,
     overflow: "hidden",
     marginRight: 16,           
     elevation: 4,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     height: height * 0.32,
     shadowColor: "#000",
     shadowOpacity: 0.15,
@@ -33,7 +35,9 @@ container: {
   },
 
   price: {
-    fontSize: 14,
-    color: "#555",
+    fontSize: 16,
+    fontWeight: "400",
+
+    color: "#050505ff",
   },
 });

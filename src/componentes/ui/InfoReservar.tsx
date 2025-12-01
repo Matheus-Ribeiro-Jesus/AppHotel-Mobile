@@ -20,7 +20,7 @@ const InfoReserva = ({ dateCheckin, dateCheckout, dayMonthIn, dayMonthOut }: Pro
       <View
         style={{
           backgroundColor: "#e0e0e0",
-          paddingHorizontal: 16,
+          paddingHorizontal: 8,
           paddingVertical: 8,
           borderRadius: 20,
         }}

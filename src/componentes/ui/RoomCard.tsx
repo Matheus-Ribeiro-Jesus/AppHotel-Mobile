@@ -1,22 +1,30 @@
-import { Image, StyleSheet, View, Text } from "react-native";
-import { stylesRoom } from "@/componentes/ui/stylesRoom"
+import { Image, View, Text } from "react-native";
+import { stylesRoom } from "@/componentes/ui/stylesRoom";
 
-const RenderRoomCard = () => {
+type Props = {
+  name: string;
+  price: string;
+  descricao: string,
+
+};
+
+const RenderRoomCard = ({ name, price }: Props) => {
   return (
     <View style={stylesRoom.container}>
       <Image
-        source={{ uri: "https://picsum.photos/300" }}
+        source={require("../../../assets/images/quartos.jpg")}
         style={stylesRoom.image}
       />
 
       <View style={stylesRoom.infoSection}>
-        <Text style={stylesRoom.title}>DeLuxe</Text>
-        <Text style={stylesRoom.price}>R$ 200 por 2 noites</Text>
+        <Text style={stylesRoom.title}>{name}</Text>
+        <Text style={stylesRoom.price}>
+          <Text style={{ fontWeight: "bold", color: "blue", fontSize: 16, }}>R$ {price}</Text>{" "}
+          por noite
+        </Text>
       </View>
-      
     </View>
   );
 };
-
 
 export default RenderRoomCard;
