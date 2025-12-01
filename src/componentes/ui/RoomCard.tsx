@@ -3,14 +3,17 @@ import { stylesRoom } from "@/componentes/ui/stylesRoom";
 
 type Props = {
   name: string;
-  price: string;
+  price: number;
   descricao: string,
+
+  containerStyle: any;
+
 
 };
 
-const RenderRoomCard = ({ name, price }: Props) => {
+const RenderRoomCard = ({ name, price, descricao, containerStyle}: Props) => {
   return (
-    <View style={stylesRoom.container}>
+    <View style={[stylesRoom.container, containerStyle]}>
       <Image
         source={require("../../../assets/images/quartos.jpg")}
         style={stylesRoom.image}
@@ -23,6 +26,7 @@ const RenderRoomCard = ({ name, price }: Props) => {
           por noite
         </Text>
       </View>
+      <Text style={stylesRoom.descricao}>{descricao}</Text>
     </View>
   );
 };

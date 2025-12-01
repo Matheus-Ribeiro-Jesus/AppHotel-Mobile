@@ -37,8 +37,8 @@ const RenderReservations = () => {
             >
               <RenderRoomCard
                 name={"DeLuxe"}
-                price={"200"} 
-                descricao={""} />
+                price={200}
+                descricao={"Nosso melhor quarto"} containerStyle={{borderRadius: 0}} />
                 
             </ScrollView>
           </View>

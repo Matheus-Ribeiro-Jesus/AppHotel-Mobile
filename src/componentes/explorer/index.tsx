@@ -71,9 +71,7 @@ const RenderExplorer = () => {
           paddingHorizontal: 3,
         }}
       >
-        <RenderRoomCard />
-        <RenderRoomCard />
-        <RenderRoomCard />
+        <RenderRoomCard name={"DeLuxe"} price={200} descricao={"Nosso melhor quarto!"} containerStyle={{borderRadius: "none"}} />
         
       </ScrollView>
 

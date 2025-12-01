@@ -8,14 +8,14 @@ container: {
     backgroundColor: "#fff",
     overflow: "hidden",
     marginRight: 16,           
-    elevation: 4,
+    elevation: 7,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    height: height * 0.32,
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
+    height: height * 0.35,
+    shadowColor: "#000000ff",
+    shadowOpacity: 0.20,
     shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
+    borderRadius: 12,
   },
 
   image: {
@@ -23,8 +23,13 @@ container: {
     height: 140,               
   },
 
+  descricao: {
+    fontSize: 14,
+    left: 10,
+  },
+
   infoSection: {
-    padding: 12,
+    padding: 10,
     gap: 5,
   },
 
@@ -35,9 +40,8 @@ container: {
   },
 
   price: {
-    fontSize: 16,
-    fontWeight: "400",
-
+    fontSize: 17,
+    fontWeight: "500",
     color: "#050505ff",
   },
 });
