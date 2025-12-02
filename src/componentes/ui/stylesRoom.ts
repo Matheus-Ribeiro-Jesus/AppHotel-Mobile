@@ -4,7 +4,7 @@ const { width, height } = Dimensions.get("window");
 
 export const stylesRoom = StyleSheet.create({
 container: {
-  width: width * 0.50,
+  width: width * 0.65,
   backgroundColor: "#fff",
   marginRight: 16,
   height: height * 0.35,

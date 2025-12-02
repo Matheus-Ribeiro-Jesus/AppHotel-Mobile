@@ -7,7 +7,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explorer"
         options={{
-          title: 'Pesquisar',
+          title: 'Explorer',
           tabBarIcon: ({ color }) => <FontAwesome size={25} name="search" color={color} />,
         }}
       />

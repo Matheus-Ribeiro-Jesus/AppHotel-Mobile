@@ -12,7 +12,7 @@ type Props = {
   price: number;
   descricao: string;
   image?: ImageSourcePropType;
-  containerStyle: any;
+  containerStyle?: any;
   icon?: NameIcon;
 };
 

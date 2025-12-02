@@ -26,7 +26,7 @@ const DateSelector = ({onSelectDate}: Props) => {
         textFontSize: 14,
         textHeaderFontSize: 15,
       }}
-      style={{ borderRadius: 15, width: width * 0.65, height: "auto" }}
+      style={{ borderRadius: 15, width: width * 0.60, height: "auto", position: "absolute", zIndex: 1, }}
       isGregorian={true}
       minimumDate={today}
       selected={selectDate}
