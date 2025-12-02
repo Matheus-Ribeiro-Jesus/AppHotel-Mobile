@@ -4,21 +4,23 @@ const { width, height } = Dimensions.get("window");
 
 export const stylesRoom = StyleSheet.create({
 container: {
-    width: width * 0.50,               
-    backgroundColor: "#fff",
-    overflow: "hidden",
-    marginRight: 16,           
-    elevation: 7,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    height: height * 0.35,
-    shadowColor: "#000000ff",
-    shadowOpacity: 0.20,
-    shadowRadius: 6,
-    borderRadius: 12,
-  },
+  width: width * 0.50,
+  backgroundColor: "#fff",
+  marginRight: 16,
+  height: height * 0.35,
+  elevation: 5,
+  shadowColor: "#000",
+  shadowOpacity: 15,
+  shadowRadius: 20,
+  borderRadius: 12,
+  overflow: "hidden",  
+},
 
-  image: {
+principal: {
+  height: height * 0.36,
+},
+
+  imagem: {
     width: "100%",
     height: 140,               
   },

@@ -71,7 +71,15 @@ const RenderExplorer = () => {
           paddingHorizontal: 3,
         }}
       >
-        <RenderRoomCard name={"DeLuxe"} price={200} descricao={"Nosso melhor quarto!"} containerStyle={{borderRadius: "none"}} />
+        <RenderRoomCard
+          image={require("../../../assets/images/quartos.jpg")}
+          name="DeLuxe"
+          price={200}
+          descricao={"Nosso melhor quarto!"}
+          icon={{
+            lib: "FontAwesome5",
+            name: "bed"
+          }} containerStyle={{}} />
         
       </ScrollView>
 

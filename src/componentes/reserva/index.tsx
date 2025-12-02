@@ -14,7 +14,7 @@ import RenderRoomCard from "../ui/RoomCard";
 const RenderReservations = () => {
   const { width } = Dimensions.get("window");
   return (
-    <AuthContainer SafeArea2={{ backgroundColor: "#f9f9f9", marginTop: -25, }}>
+    <AuthContainer SafeArea2={{ backgroundColor: "#f9f9f9", marginTop: -25 }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
@@ -36,10 +36,12 @@ const RenderReservations = () => {
               contentContainerStyle={styles.quartosContent}
             >
               <RenderRoomCard
+                image={require("../../../assets/images/quartos.jpg")}
                 name={"DeLuxe"}
                 price={200}
-                descricao={"Nosso melhor quarto"} containerStyle={{borderRadius: 0}} />
-                
+                descricao={"Nosso melhor quarto"}
+                containerStyle={{}}
+              />
             </ScrollView>
           </View>
         </View>
@@ -56,19 +58,19 @@ const RenderReservations = () => {
             />
           </View>
         </View>
-      <View style={styles.infoWrapper}>
-        <Text style={styles.sectionTitle}>Resumo da reserva</Text>
+        <View style={styles.infoWrapper}>
+          <Text style={styles.sectionTitle}>Resumo da reserva</Text>
 
-        <View style={styles.card}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Total a pagar</Text>
-            <Text style={styles.totalValue}>R$ 200,00</Text>
+          <View style={styles.card}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Total a pagar</Text>
+              <Text style={styles.totalValue}>R$ 200,00</Text>
+            </View>
+            <Text style={styles.infoText}>
+              Inclui impostos • Pagamento na chegada
+            </Text>
           </View>
-          <Text style={styles.infoText}>
-            Inclui impostos • Pagamento na chegada
-          </Text>
         </View>
-      </View>
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity style={[styles.button, { width: width * 0.85 }]}>
@@ -167,12 +169,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
   },
 
-    buttonText: {
-      color: "#fff",
-      fontSize: 17,
-      fontWeight: "600",
-    },
-    totalRow: {
+  buttonText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
