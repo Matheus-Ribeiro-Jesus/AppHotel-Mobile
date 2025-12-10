@@ -37,9 +37,6 @@ const RenderResetPassword = () => {
     !loading;
 
   const handleSubmit = () => {
-    setTouched({ email: true });
-    if (!canSubmit) return;
-
     router.replace("/(auth)/login");
   };
 

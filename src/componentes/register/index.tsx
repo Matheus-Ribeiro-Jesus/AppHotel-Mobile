@@ -15,12 +15,19 @@ function isValidRegister(email: string) {
 const RenderRegister = () => {
   const router = useRouter();
 
+  const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [telefone, setTelefone] = useState("");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [touched, setTouched] = useState<{
+    nome?: boolean;
+    cpf?: boolean;
+    telefone?: boolean;
     email?: boolean;
     password?: boolean;
     confirmPassword?: boolean;
@@ -29,15 +36,32 @@ const RenderRegister = () => {
   const errors = useMemo(() => {
     const error: Record<string, string> = {};
 
+    // --- Nome ---
+    if (touched.nome && !nome) error.nome = "Nome obrigatório";
+
+    // --- CPF (somente validação básica de tamanho) ---
+    if (touched.cpf && !cpf) error.cpf = "CPF obrigatório";
+    if (touched.cpf && cpf && cpf.length < 11)
+      error.cpf = "Digite um CPF válido";
+
+    // --- Telefone (somente validação básica de tamanho) ---
+    if (touched.telefone && !telefone) error.telefone = "Telefone obrigatório";
+    if (touched.telefone && telefone && telefone.length < 10)
+      error.telefone = "Digite um telefone válido";
+
+    // --- Email ---
     if (touched.email && !email) error.email = "Email obrigatório";
     if (touched.email && email && !isValidRegister(email))
       error.email = "Digite um email válido";
 
-    if (touched.password && !password) error.password = "Senha obrigatória";
+    // --- Senha ---
+    if (touched.password && !password)
+      error.password = "Senha obrigatória";
 
     if (touched.password && password && password.length < 6)
       error.password = "Mínimo de 6 caracteres para a senha";
 
+    // --- Confirmar senha ---
     if (touched.confirmPassword && !confirmPassword)
       error.confirmPassword = "Confirme sua senha";
 
@@ -50,9 +74,12 @@ const RenderRegister = () => {
       error.confirmPassword = "As senhas não coincidem";
 
     return error;
-  }, [email, password, confirmPassword, touched]);
+  }, [nome, cpf, telefone, email, password, confirmPassword, touched]);
 
   const canSubmit =
+    nome &&
+    cpf &&
+    telefone &&
     email &&
     password &&
     confirmPassword &&
@@ -60,15 +87,7 @@ const RenderRegister = () => {
     !loading;
 
   const handleSubmit = () => {
-    setTouched({
-      email: true,
-      password: true,
-      confirmPassword: true,
-    });
-
-    if (!canSubmit) return;
-
-    router.replace("/(tabs)/explorer");
+    router.replace("/(auth)/login");
   };
 
   const { width, height } = Dimensions.get("window");
@@ -85,22 +104,32 @@ const RenderRegister = () => {
       }
     >
       <View style={[global.content, register.inputs]}>
+
         <TextField
           label="Nome"
           placeholder="Digite seu nome"
           keyboardType="default"
+          value={nome}
+          onChangeText={setNome}
+          errorText={errors.nome}
         />
 
         <TextField
           label="CPF"
-          placeholder="000.000.000-00"
+          placeholder="00000000000"
           keyboardType="default"
+          value={cpf}
+          onChangeText={setCpf}
+          errorText={errors.cpf}
         />
 
         <TextField
           label="Telefone"
-          placeholder="(15) 00000-0000"
+          placeholder="15000000000"
           keyboardType="default"
+          value={telefone}
+          onChangeText={setTelefone}
+          errorText={errors.telefone}
         />
 
         <TextField
@@ -147,6 +176,7 @@ const RenderRegister = () => {
             </Text>
           </TouchableOpacity>
         </View>
+
       </View>
     </AuthContainer>
   );
