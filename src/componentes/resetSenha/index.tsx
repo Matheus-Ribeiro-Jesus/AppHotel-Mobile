@@ -37,7 +37,7 @@ const RenderResetPassword = () => {
     !loading;
 
   const handleSubmit = () => {
-    router.replace("/(auth)/login");
+    router.replace("/(auth)");
   };
 
   const { width, height } = Dimensions.get("window");
