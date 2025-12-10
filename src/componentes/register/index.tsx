@@ -36,32 +36,28 @@ const RenderRegister = () => {
   const errors = useMemo(() => {
     const error: Record<string, string> = {};
 
-    // --- Nome ---
     if (touched.nome && !nome) error.nome = "Nome obrigatório";
 
-    // --- CPF (somente validação básica de tamanho) ---
     if (touched.cpf && !cpf) error.cpf = "CPF obrigatório";
+
     if (touched.cpf && cpf && cpf.length < 11)
       error.cpf = "Digite um CPF válido";
 
-    // --- Telefone (somente validação básica de tamanho) ---
     if (touched.telefone && !telefone) error.telefone = "Telefone obrigatório";
+
     if (touched.telefone && telefone && telefone.length < 10)
       error.telefone = "Digite um telefone válido";
 
-    // --- Email ---
     if (touched.email && !email) error.email = "Email obrigatório";
     if (touched.email && email && !isValidRegister(email))
       error.email = "Digite um email válido";
 
-    // --- Senha ---
     if (touched.password && !password)
       error.password = "Senha obrigatória";
 
     if (touched.password && password && password.length < 6)
       error.password = "Mínimo de 6 caracteres para a senha";
 
-    // --- Confirmar senha ---
     if (touched.confirmPassword && !confirmPassword)
       error.confirmPassword = "Confirme sua senha";
 
