@@ -2,14 +2,15 @@ import AuthContainer from "../ui/AuthContainer";
 import TextField from "../ui/TextField";
 import PasswordField from "../ui/PasswordField";
 import React, { useMemo, useState } from "react";
-import { TouchableOpacity, Text, View, Dimensions } from "react-native";
+import { TouchableOpacity, Text, View, Dimensions, Alert } from "react-native";
 import { global } from "../ui/style";
 import { register } from "@/componentes/register/style";
 import { useRouter } from "expo-router";
 import Icon from "react-native-vector-icons/Ionicons";
 
-function isValidRegister(email: string) {
-  return /^[^\s@&='!"]@[^\s@&='!"].[^\s@&='!"]$/.test(email);
+// Validação simples de email
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 const RenderRegister = () => {
@@ -18,7 +19,6 @@ const RenderRegister = () => {
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [telefone, setTelefone] = useState("");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,30 +33,29 @@ const RenderRegister = () => {
     confirmPassword?: boolean;
   }>({});
 
+  // ----------- VALIDACOES -----------
   const errors = useMemo(() => {
     const error: Record<string, string> = {};
 
     if (touched.nome && !nome) error.nome = "Nome obrigatório";
 
     if (touched.cpf && !cpf) error.cpf = "CPF obrigatório";
-
-    if (touched.cpf && cpf && cpf.length < 11)
+    if (touched.cpf && cpf && cpf.length !== 11)
       error.cpf = "Digite um CPF válido";
 
     if (touched.telefone && !telefone) error.telefone = "Telefone obrigatório";
-
     if (touched.telefone && telefone && telefone.length < 10)
       error.telefone = "Digite um telefone válido";
 
     if (touched.email && !email) error.email = "Email obrigatório";
-    if (touched.email && email && !isValidRegister(email))
+    if (touched.email && email && !isValidEmail(email))
       error.email = "Digite um email válido";
 
     if (touched.password && !password)
       error.password = "Senha obrigatória";
 
-    if (touched.password && password && password.length < 6)
-      error.password = "Mínimo de 6 caracteres para a senha";
+    if (touched.password && password.length < 6)
+      error.password = "Mínimo de 6 caracteres";
 
     if (touched.confirmPassword && !confirmPassword)
       error.confirmPassword = "Confirme sua senha";
@@ -72,6 +71,7 @@ const RenderRegister = () => {
     return error;
   }, [nome, cpf, telefone, email, password, confirmPassword, touched]);
 
+  // ----------- HABILITAR BOTÃO -----------
   const canSubmit =
     nome &&
     cpf &&
@@ -82,11 +82,31 @@ const RenderRegister = () => {
     Object.keys(errors).length === 0 &&
     !loading;
 
-  const handleSubmit = () => {
-    router.replace("/(auth)");
+  // ----------- SUBMIT -----------
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      console.log("[REGISTER] Dados enviados:", {
+        nome,
+        cpf,
+        telefone,
+        email,
+        password,
+      });
+
+      await new Promise((r) => setTimeout(r, 2000));
+
+      Alert.alert("Conta criada com sucesso!");
+      router.replace("/(auth)");
+
+    } catch (err) {
+      Alert.alert("Erro", "Não foi possível criar sua conta");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const { width, height } = Dimensions.get("window");
+  const { height } = Dimensions.get("window");
 
   return (
     <AuthContainer
@@ -104,55 +124,60 @@ const RenderRegister = () => {
         <TextField
           label="Nome"
           placeholder="Digite seu nome"
-          keyboardType="default"
           value={nome}
           onChangeText={setNome}
+          onBlur={() => setTouched((p) => ({ ...p, nome: true }))}
           errorText={errors.nome}
         />
 
         <TextField
           label="CPF"
           placeholder="00000000000"
-          keyboardType="default"
           value={cpf}
+          keyboardType="numeric"
           onChangeText={setCpf}
+          onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
           errorText={errors.cpf}
         />
 
         <TextField
           label="Telefone"
-          placeholder="15000000000"
-          keyboardType="default"
+          placeholder="15999999999"
           value={telefone}
+          keyboardType="numeric"
           onChangeText={setTelefone}
+          onBlur={() => setTouched((p) => ({ ...p, telefone: true }))}
           errorText={errors.telefone}
         />
 
         <TextField
           label="Email"
-          icon={{ lib: "MaterialIcons", name: "email" }}
-          placeholder="user@email.com"
-          keyboardType="default"
+          placeholder="email@exemplo.com"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onBlur={() => setTouched((p) => ({ ...p, email: true }))}
           errorText={errors.email}
         />
 
         <PasswordField
           label="Senha"
-          icon={{ lib: "MaterialIcons", name: "lock" }}
-          placeholder="*********"
+          placeholder="********"
           value={password}
           onChangeText={setPassword}
+          onBlur={() => setTouched((p) => ({ ...p, password: true }))}
           errorText={errors.password}
         />
 
         <PasswordField
           label="Confirme sua senha"
-          icon={{ lib: "MaterialIcons", name: "lock" }}
-          placeholder="*********"
+          placeholder="********"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
+          onBlur={() =>
+            setTouched((p) => ({ ...p, confirmPassword: true }))
+          }
           errorText={errors.confirmPassword}
         />
 
@@ -161,7 +186,9 @@ const RenderRegister = () => {
           disabled={!canSubmit}
           onPress={handleSubmit}
         >
-          <Text style={register.textContent}>Criar conta</Text>
+          <Text style={register.textContent}>
+            {loading ? "Carregando..." : "Criar conta"}
+          </Text>
         </TouchableOpacity>
 
         <View style={{ alignItems: "center", marginTop: height * 0.04 }}>

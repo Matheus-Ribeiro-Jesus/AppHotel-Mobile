@@ -2,7 +2,7 @@ import AuthContainer from "@/componentes/ui/AuthContainer";
 import TextField from "@/componentes/ui/TextField";
 import PasswordField from "../ui/PasswordField";
 import React, { useMemo, useState } from "react";
-import { TouchableOpacity, Text, View, Dimensions } from "react-native";
+import { TouchableOpacity, Text, View, Dimensions, Alert } from "react-native";
 import { global } from "../ui/style";
 import { login } from "@/componentes/login/login";
 import { useRouter } from "expo-router";
@@ -37,7 +37,26 @@ const RenderLogin = () => {
     email && password && Object.keys(erros).length === 0 && !loading;
 
   const handleSubmit = async () => {
-    router.replace("/(tabs)/explorer");
+    try {
+      setLoading(true);
+      console.log("[LOGIN] Tentando login com: ", {
+        email, 
+        password
+      });
+      await new Promise((req) => setTimeout(req, 2000));
+      if(email === "matheus@gmail.com" && password === "123"){
+        Alert.alert("Login bem sucedido");
+      }else{
+        Alert.alert("Login invalido");
+        return;
+
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Falha ao tentar logar");
+    }
+    finally{
+      setLoading(false); 
+    }
   };
 
   const { width, height } = Dimensions.get("window");
