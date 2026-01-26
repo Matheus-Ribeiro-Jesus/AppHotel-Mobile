@@ -1,14 +1,17 @@
-import { useState } from "react";
-import { Dimensions, ScrollView, TouchableOpacity, View } from "react-native";
 import AuthContainer from "@/componentes/ui/AuthContainer";
 import DateSelector from "@/componentes/ui/datePicker";
 import TextField from "@/componentes/ui/TextField";
+import React, { useState } from "react";
+import { Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import InputSpin from "../ui/InputSpin";
 import RenderRoomCard from "../ui/RoomCard";
+import { global } from "../ui/style";
 
 const RenderExplorer = () => {
   const { width, height } = Dimensions.get("window");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [qntGuests, setQntGuests] = useState("");
   const [calendar, setCalendar] = useState<"checkin" | "checkout" | null>(null);
 
   return (
@@ -40,6 +43,7 @@ const RenderExplorer = () => {
               }}
             />
           )}
+
         </View>
         <View style={{ display: "flex", flexDirection: "column" }}>
           <TouchableOpacity onPress={() => setCalendar("checkout")}>
@@ -52,7 +56,9 @@ const RenderExplorer = () => {
               />
             </View>
           </TouchableOpacity>
-
+          
+          
+          
           {calendar === "checkout" && (
             <DateSelector
               onSelectDate={(date) => {
@@ -61,7 +67,18 @@ const RenderExplorer = () => {
               }}
             />
           )}
+          
         </View>
+
+          <View>
+            <Text style={global.label}>
+              Quantidade de hóspedes
+            </Text>
+            <InputSpin onSelectSpin={(guests) => {
+              setQntGuests(guests);
+            }} />
+          </View>
+
       </View>
 
       <ScrollView
@@ -72,7 +89,7 @@ const RenderExplorer = () => {
           paddingHorizontal: 3,
         }}
       >
-        <View style={{ display: "flex", alignItems: "center", left: 35, }}>
+        <View style={{ display: "flex", alignItems: "center", left: 65, }}>
           <RenderRoomCard
             image={require("../../../assets/images/quartos.jpg")}
             name="DeLuxe"

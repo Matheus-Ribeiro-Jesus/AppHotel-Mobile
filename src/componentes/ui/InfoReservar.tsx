@@ -1,5 +1,6 @@
 import { Dimensions, Image, Text, View } from "react-native";
 import { infoReservar } from "@/componentes/ui/infoReservaStyles";
+import React from "react";
 
 type Props = {
   dateCheckin: string; 

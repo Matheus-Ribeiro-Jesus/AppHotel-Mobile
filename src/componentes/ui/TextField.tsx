@@ -1,6 +1,7 @@
 import { FontAwesome5, FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { Text, TextInput, TextInputProps, View } from "react-native";
 import { global } from "@/componentes/ui/style";
+import React from "react";
 
 type NameIcon =
   | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }
@@ -20,6 +21,7 @@ const TextField = ({
   style,
   ...restInputProps
 }: Props) => {
+  
   return (
     <View style={global.inputGroup}>
       <Text style={global.label}>{label}</Text>

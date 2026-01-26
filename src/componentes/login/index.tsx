@@ -46,6 +46,7 @@ const RenderLogin = () => {
       await new Promise((req) => setTimeout(req, 2000));
       if(email === "matheus@gmail.com" && password === "123"){
         Alert.alert("Login bem sucedido");
+        router.replace("/(tabs)/explorer");
       }else{
         Alert.alert("Login invalido");
         return;
