@@ -1,7 +1,6 @@
-import React from "react";
-import { useState } from "react"
-import {Dimensions, View} from "react-native"
-import DatePicker, { getToday } from "react-native-modern-datepicker"
+import React, { useState } from "react";
+import { Dimensions, View } from "react-native";
+import DatePicker, { getToday } from "react-native-modern-datepicker";
 
 type Props = {
   onSelectDate: (date: string) => void
@@ -13,7 +12,7 @@ const DateSelector = ({onSelectDate}: Props) => {
   const [selectDate, setSelectedDate] = useState("");
   
   return (
-    <View>
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
       <DatePicker
       mode="calendar"
       options={{
@@ -27,7 +26,7 @@ const DateSelector = ({onSelectDate}: Props) => {
         textFontSize: 14,
         textHeaderFontSize: 15,
       }}
-      style={{ borderRadius: 15, width: width * 0.60, height: "auto", position: "absolute", zIndex: 1, }}
+      style={{ borderRadius: 15, width: 280, height: "auto" }}
       isGregorian={true}
       minimumDate={today}
       selected={selectDate}
@@ -40,4 +39,4 @@ const DateSelector = ({onSelectDate}: Props) => {
     </View>
   );
 };
-export default DateSelector
+export default DateSelector;

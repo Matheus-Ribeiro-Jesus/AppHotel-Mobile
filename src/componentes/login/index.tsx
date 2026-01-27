@@ -104,7 +104,7 @@ const RenderLogin = () => {
           </TouchableOpacity>
           <View
             style={{
-              backgroundColor: "#7c8390ff",
+              backgroundColor: "rgb(0, 0, 0)",
               width: width * 0.5,
               height: height * 0.001,
               borderRadius: 10,
