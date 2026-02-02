@@ -1,3 +1,4 @@
+import React from "react";
 import RenderExplorer from "../../componentes/explorer/index";
 
 const Explorer = () => {

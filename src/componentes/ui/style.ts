@@ -20,7 +20,7 @@ export const global = StyleSheet.create({
     },
 
     title: {
-        color: "white",
+        color: "black",
         fontSize: 24,
         fontWeight: "800",
         marginTop: height * 0.05,
@@ -28,7 +28,7 @@ export const global = StyleSheet.create({
 
     subtitle: {
         fontSize: 17,
-        color: "white",
+        color: "black",
         marginTop: height * 0.02,
     },
 
@@ -56,7 +56,7 @@ export const global = StyleSheet.create({
         marginTop: 3,
         fontSize: 15,
         fontWeight: "600",
-        color: "#020202ff",
+        color: "rgb(3, 3, 3)",
         marginBottom: height * 0.01,
     },
 
@@ -71,10 +71,10 @@ export const global = StyleSheet.create({
 
     inputError: {
         flexDirection: "row",
-        backgroundColor: "#b60606ff",
+        backgroundColor: "rgb(221, 44, 44)",
         alignItems: "center",
         borderWidth: 1,
-        borderColor: "#b60606ff",
+        borderColor: "rgb(228, 61, 61)",
         borderRadius: 10,
         paddingLeft: width * 0.02,
     },
@@ -82,7 +82,7 @@ export const global = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 15,
-        color: "#eae8e8ff",
+        color: "rgb(10, 10, 10)",
         fontWeight: "600",
         paddingHorizontal: width * 0.02,
 
@@ -124,7 +124,7 @@ export const global = StyleSheet.create({
     logo: {
         width: width * 0.30,
         height: width * 0.30,
-        borderRadius: 60, 
+        borderRadius: 60,
         overflow: "hidden",
     },
 

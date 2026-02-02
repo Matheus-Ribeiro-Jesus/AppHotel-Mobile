@@ -1,4 +1,5 @@
 import RenderReservations from '@/componentes/reserva';
+import React from 'react';
 import { View } from 'react-native';
 
 const Tab = () => {

@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import AuthContainer from "../ui/AuthContainer";
+import React from "react";
 
 const RenderAccount = () => {
   return (

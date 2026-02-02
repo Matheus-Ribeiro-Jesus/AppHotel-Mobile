@@ -1,4 +1,5 @@
 import RenderLogin from "@/componentes/login"
+import React from "react";
 
 const Login = () => {
         return (
