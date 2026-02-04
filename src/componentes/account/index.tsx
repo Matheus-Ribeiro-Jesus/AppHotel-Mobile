@@ -34,34 +34,18 @@ export default function AccountForm() {
     ],
   });
 
-  // Função para "salvar" os dados (apenas local, sem backend)
   const salvarDados = () => {
-    // Validação básica
     if (!nome.trim() || !email.trim() || !telefone.trim() || !cpf.trim()) {
       Alert.alert("Atenção", "Preencha todos os campos antes de salvar!");
       return;
     }
-
-    // Aqui você poderia fazer algo com os dados (ex: salvar em AsyncStorage no futuro)
-    // Por enquanto só mostramos sucesso
-    Alert.alert(
-      "Sucesso",
-      "Dados salvos localmente!\n\n" +
-      `Nome: ${nome}\n` +
-      `Email: ${email}\n` +
-      `Telefone: ${telefone}\n` +
-      `CPF: ${cpf}`
-    );
-
-    // Opcional: limpar os campos após salvar (comente se quiser manter os valores)
-    // setNome("");
-    // setEmail("");
-    // setTelefone("");
-    // setCpf("");
   };
 
   return (
-    <AuthContainer SafeArea2={{ backgroundColor: "#fffefe" }}
+    <AuthContainer
+      titleColor="black"
+      subtitleColor="black"
+      SafeArea2={{ backgroundColor: "#fffefe" }}
       title="Minha conta"
       subtitle="Por favor insira seus novos dados"
     >

@@ -1,6 +1,7 @@
 import { Image, View, Text, ImageSourcePropType } from "react-native";
 import { stylesRoom } from "@/componentes/ui/stylesRoom";
 import { MaterialIcons, FontAwesome6, FontAwesome5 } from "@expo/vector-icons";
+import React from "react";
 
 type NameIcon =
   | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }

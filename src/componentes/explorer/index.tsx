@@ -6,6 +6,7 @@ import { Dimensions, Modal, ScrollView, Text, TouchableOpacity, View } from "rea
 import InputSpin from "../ui/InputSpin";
 import RenderRoomCard from "../ui/RoomCard";
 import { global } from "../ui/style";
+import { router } from "expo-router";
 
 const RenderExplorer = () => {
   const { width, height } = Dimensions.get("window");
@@ -101,6 +102,10 @@ const RenderExplorer = () => {
                 name: "bed",
               }}
             />
+
+            <TouchableOpacity onPress={() => router.push("/checkout")}>
+              <Text style={{ color: "#007AFF", fontWeight: "bold" }}>Ver detalhes</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 

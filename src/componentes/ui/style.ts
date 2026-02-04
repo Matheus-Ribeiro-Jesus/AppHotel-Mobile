@@ -11,7 +11,7 @@ export const global = StyleSheet.create({
     },
 
     container: {
-        paddingTop: height * 0.02,
+        paddingTop: height * 0.05,
     },
 
     header: {
@@ -20,7 +20,7 @@ export const global = StyleSheet.create({
     },
 
     title: {
-        color: "black",
+        color: "white",
         fontSize: 24,
         fontWeight: "800",
         marginTop: height * 0.05,
@@ -28,13 +28,13 @@ export const global = StyleSheet.create({
 
     subtitle: {
         fontSize: 17,
-        color: "black",
+        color: "white",
         marginTop: height * 0.02,
     },
 
     content: {
         flex: 1,
-        marginTop: height * 0.02,
+        marginTop: width * 0.01,
         backgroundColor: "#ffffffff",
         padding: width * 0.05,
         shadowColor: "black",
@@ -42,7 +42,7 @@ export const global = StyleSheet.create({
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         shadowOpacity: 20,
-        height: height * 0.60,
+        height: height * 0.67,
     },
 
     inputGroup: {
@@ -71,10 +71,10 @@ export const global = StyleSheet.create({
 
     inputError: {
         flexDirection: "row",
-        backgroundColor: "rgb(221, 44, 44)",
+        backgroundColor: "rgba(224, 55, 55, 0.18)",
         alignItems: "center",
         borderWidth: 1,
-        borderColor: "rgb(228, 61, 61)",
+        borderColor: "rgb(224, 55, 55)",
         borderRadius: 10,
         paddingLeft: width * 0.02,
     },
@@ -96,7 +96,7 @@ export const global = StyleSheet.create({
     },
 
     errorText: {
-        color: "red",
+        color: "rgb(224, 55, 55)",
         fontSize: 13,
         marginTop: height * 0.01,
         fontWeight: "600",

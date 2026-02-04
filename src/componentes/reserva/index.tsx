@@ -10,6 +10,7 @@ import {
 import AuthContainer from "../ui/AuthContainer";
 import InfoReserva from "@/componentes/ui/InfoReservar";
 import RenderRoomCard from "../ui/RoomCard";
+import React from "react";
 
 const RenderReservations = () => {
   const { width } = Dimensions.get("window");
@@ -41,7 +42,8 @@ const RenderReservations = () => {
                 price={200}
                 descricao={"Nosso melhor quarto"}
                 containerStyle={{}}
-              />
+                />
+
             </ScrollView>
           </View>
         </View>

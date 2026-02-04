@@ -7,11 +7,13 @@ import { global } from "../ui/style";
 import { register } from "@/componentes/register/style";
 import { useRouter } from "expo-router";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Masks, useMaskedInputProps } from "react-native-mask-input";
 
 // Validação simples de email
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 
 const RenderRegister = () => {
   const router = useRouter();
@@ -23,6 +25,20 @@ const RenderRegister = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const propsCpf = useMaskedInputProps({
+    value: cpf,
+    onChangeText: setCpf,
+    mask: [
+      /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, "-", /\d/, /\d/
+    ],
+  });
+
+  const propsTelefone = useMaskedInputProps({
+    value: telefone,
+    onChangeText: setTelefone,
+    mask: Masks.BRL_PHONE,
+  });
 
   const [touched, setTouched] = useState<{
     nome?: boolean;
@@ -107,7 +123,6 @@ const RenderRegister = () => {
   };
 
   const { height } = Dimensions.get("window");
-
   return (
     <AuthContainer
       title="Cadastro de Usuário"
@@ -131,21 +146,21 @@ const RenderRegister = () => {
         />
 
         <TextField
+        {...propsCpf}
           label="CPF"
           placeholder="00000000000"
           value={cpf}
           keyboardType="numeric"
-          onChangeText={setCpf}
           onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
           errorText={errors.cpf}
         />
 
         <TextField
           label="Telefone"
+          {...propsTelefone}
           placeholder="15999999999"
           value={telefone}
           keyboardType="numeric"
-          onChangeText={setTelefone}
           onBlur={() => setTouched((p) => ({ ...p, telefone: true }))}
           errorText={errors.telefone}
         />

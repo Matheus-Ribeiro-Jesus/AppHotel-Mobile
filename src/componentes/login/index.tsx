@@ -108,7 +108,7 @@ const RenderLogin = () => {
               width: width * 0.5,
               height: height * 0.001,
               borderRadius: 10,
-              marginTop: height * 0.03,
+              marginTop: height * 0.02,
             }}
           ></View>
           <TouchableOpacity
