@@ -3,6 +3,6 @@ const { width, height } = Dimensions.get("window");
 
 export const login = StyleSheet.create({
     texts: {
-        height: height * 0.60,
+        height: height * 0.58,
     }
 })

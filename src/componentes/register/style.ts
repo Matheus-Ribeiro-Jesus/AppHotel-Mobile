@@ -6,7 +6,7 @@ export const register = StyleSheet.create({
         backgroundColor: "#000000ff",
         borderRadius: 10,
         alignItems: "center",
-        padding: width * 0.025,
+        padding: width * 0.029,
     },
 
     textContent: {

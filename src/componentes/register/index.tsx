@@ -127,7 +127,7 @@ const RenderRegister = () => {
     <AuthContainer
       title="Cadastro de Usuário"
       subtitle="Hotel Transilvania"
-      logo={require("../../../assets/images/profile.png")}
+      logo={require("../../../assets/images/logo.png")}
       headerLeft={
         <TouchableOpacity onPress={() => router.back()}>
           <Icon name="arrow-back" size={28} color="#fff" />

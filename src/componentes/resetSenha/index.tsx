@@ -57,7 +57,7 @@ const RenderResetPassword = () => {
   return (
     <AuthContainer
       title="Esqueceu sua senha?"
-      logo={require("../../../assets/images/forgotPassword.png")}
+      logo={require("../../../assets/images/logo.png")}
       logoStyle={{ borderRadius: 30 }}
       subtitle="Digite seu email para redefinir sua senha"
       headerLeft={

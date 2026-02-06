@@ -125,8 +125,6 @@ const styles = StyleSheet.create({
     color: "#333",
   },
 
-  /* ---- QUARTOS ---- */
-
   quartosContainer: {
     paddingTop: 10,
     paddingBottom: 10,
@@ -136,8 +134,6 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingHorizontal: 4,
   },
-
-  /* ---- CARD PADRÃO ---- */
 
   card: {
     backgroundColor: "#ffffff",
@@ -150,8 +146,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-
-  /* ---- BOTÃO ---- */
 
   buttonWrapper: {
     alignItems: "center",

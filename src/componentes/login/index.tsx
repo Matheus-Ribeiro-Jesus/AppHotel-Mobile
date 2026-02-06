@@ -44,7 +44,7 @@ const RenderLogin = () => {
         password
       });
       await new Promise((req) => setTimeout(req, 2000));
-      if(email === "matheus@gmail.com" && password === "123"){
+      if(email === "a@a" && password === "a"){
         Alert.alert("Login bem sucedido");
         router.replace("/(tabs)/explorer");
       }else{
@@ -65,7 +65,7 @@ const RenderLogin = () => {
     <AuthContainer
       title="Bem-vindo ao Transilvania"
       subtitle="Por favor insira seus dados"
-      logo={require("../../../assets/images/profile.png")}
+      logo={require("../../../assets/images/logo.png")}
     >
       <View style={[global.content, login.texts]}>
         <TextField

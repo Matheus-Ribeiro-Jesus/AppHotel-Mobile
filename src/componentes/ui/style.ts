@@ -4,7 +4,7 @@ const { width, height } = Dimensions.get("window");
 export const global = StyleSheet.create({
     SafeArea: {
         flex: 1,
-        backgroundColor: "#0c0c1b",
+        backgroundColor: "#080808",
     },
     keyboardAvoiding: {
         flex: 1,
@@ -35,7 +35,7 @@ export const global = StyleSheet.create({
     content: {
         flex: 1,
         marginTop: width * 0.01,
-        backgroundColor: "#ffffffff",
+        backgroundColor: "rgb(255, 255, 255)",
         padding: width * 0.05,
         shadowColor: "black",
         overflow: "hidden",
@@ -122,8 +122,8 @@ export const global = StyleSheet.create({
     },
 
     logo: {
-        width: width * 0.30,
-        height: width * 0.30,
+        width: width * 0.45,
+        height: width * 0.45,
         borderRadius: 60,
         overflow: "hidden",
     },
