@@ -10,12 +10,57 @@ import {
 import AuthContainer from "../ui/AuthContainer";
 import InfoReserva from "@/componentes/ui/InfoReservar";
 import RenderRoomCard from "../ui/RoomCard";
-import React from "react";
+import React, { useState } from "react";
 
 const RenderReservations = () => {
   const { width } = Dimensions.get("window");
+
+  // Lista de quartos
+  const [rooms, setRooms] = useState([
+    {
+      name: "DeLuxe",
+      price: 200,
+      descricao: "Nosso melhor quarto",
+      image: require("../../../assets/images/quartos.jpg"),
+    },
+    {
+      name: "DeLuxe Premium",
+      price: 200,
+      descricao: "Nosso melhor quarto",
+      image: require("../../../assets/images/quartos2.jpg"),
+    },
+    {
+      name: "Quarto Queen",
+      price: 520,
+      descricao: "Nosso melhor quarto",
+      image: require("../../../assets/images/quartos3.jpg"),
+    },
+  ]);
+
+  const [selectedRoom, setSelectedRoom] = useState<any>(rooms[0] || null);
+
+  const days = 2;
+  const total = selectedRoom ? selectedRoom.price * days : 0;
+
+  const handleDeleteRoom = (roomName: string) => {
+    const updatedRooms = rooms.filter((room) => room.name !== roomName);
+
+    setRooms(updatedRooms);
+
+    // Se não sobrou nenhum quarto
+    if (updatedRooms.length === 0) {
+      setSelectedRoom(null);
+      return;
+    }
+
+    // Se deletou o quarto selecionado
+    if (selectedRoom?.name === roomName) {
+      setSelectedRoom(updatedRooms[0]);
+    }
+  };
+
   return (
-    <AuthContainer SafeArea2={{ backgroundColor: "#f9f9f9", marginTop: -25 }}>
+    <AuthContainer SafeArea2={{ backgroundColor: "#f9f9f9", marginTop: -70 }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
@@ -27,6 +72,7 @@ const RenderReservations = () => {
           </Text>
         </View>
 
+        {/* Quartos */}
         <View style={styles.infoWrapper}>
           <Text style={styles.sectionTitle}>Quartos Reservados</Text>
 
@@ -36,47 +82,69 @@ const RenderReservations = () => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.quartosContent}
             >
-              <RenderRoomCard
-                image={require("../../../assets/images/quartos.jpg")}
-                name={"DeLuxe"}
-                price={200}
-                descricao={"Nosso melhor quarto"}
-                containerStyle={{}}
+              {rooms.map((room) => (
+                <RenderRoomCard
+                  key={room.name}
+                  image={room.image}
+                  name={room.name}
+                  price={room.price}
+                  descricao={room.descricao}
+                  containerStyle={{
+                    borderWidth: selectedRoom?.name === room.name ? 2 : 0,
+                    borderColor: "#99999ab4",
+                  }}
+                  onPress={() => setSelectedRoom(room)}
+                  onDelete={() => handleDeleteRoom(room.name)}
                 />
-
+              ))}
             </ScrollView>
           </View>
         </View>
 
+        {/* Datas */}
         <View style={styles.infoWrapper}>
-          <Text style={styles.sectionTitle}>Datas da Estadia</Text>
+          <Text style={styles.sectionTitle}>Período da Estadia</Text>
 
-          <View style={styles.card}>
-            <InfoReserva
-              dateCheckin="10/12/2024"
-              dateCheckout="14/12/2024"
-              dayMonthIn="10 Dez"
-              dayMonthOut="14 Dez"
-            />
+          <View style={styles.dateCard}>
+            <View style={styles.dateInner}>
+              <InfoReserva
+                dateCheckin="10/12/2024"
+                dateCheckout="14/12/2024"
+                dayMonthIn="10 Dez"
+                dayMonthOut="14 Dez"
+              />
+            </View>
           </View>
         </View>
+
+        {/* Resumo */}
         <View style={styles.infoWrapper}>
-          <Text style={styles.sectionTitle}>Resumo da reserva</Text>
+          <Text style={styles.sectionTitle}>Resumo da Reserva</Text>
 
           <View style={styles.card}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total a pagar</Text>
-              <Text style={styles.totalValue}>R$ 200,00</Text>
+              <Text style={styles.totalValue}>
+                {total > 0 ? `R$ ${total},00` : "--"}
+              </Text>
             </View>
+
             <Text style={styles.infoText}>
-              Inclui impostos • Pagamento na chegada
+              {selectedRoom
+                ? `${selectedRoom.name} • ${days} noites`
+                : "Nenhum quarto selecionado"}
+            </Text>
+
+            <Text style={styles.infoText}>
+              Impostos inclusos • Pagamento no check-in
             </Text>
           </View>
         </View>
 
+        {/* Botão */}
         <View style={styles.buttonWrapper}>
           <TouchableOpacity style={[styles.button, { width: width * 0.85 }]}>
-            <Text style={styles.buttonText}>Finalizar Pedido</Text>
+            <Text style={styles.buttonText}>Finalizar Reserva</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -186,5 +254,27 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "800",
     color: "#2a6fdd",
+  },
+
+  dateCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+
+    borderWidth: 1,
+    borderColor: "#f2f2f2",
+
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+
+  dateInner: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
 });

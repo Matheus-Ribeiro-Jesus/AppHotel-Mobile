@@ -1,20 +1,23 @@
-import { Image, View, Text, ImageSourcePropType } from "react-native";
+import React, { memo } from "react";
+import {
+  Image,
+  View,
+  Text,
+  ImageSourcePropType,
+  TouchableOpacity,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import { stylesRoom } from "@/componentes/ui/stylesRoom";
-import { MaterialIcons, FontAwesome6, FontAwesome5 } from "@expo/vector-icons";
-import React from "react";
-
-type NameIcon =
-  | { lib: "MaterialIcons"; name: keyof typeof MaterialIcons.glyphMap }
-  | { lib: "FontAwesome6"; name: keyof typeof FontAwesome6.glyphMap }
-  | { lib: "FontAwesome5"; name: keyof typeof FontAwesome5.glyphMap };
 
 type Props = {
   name: string;
   price: number;
   descricao: string;
   image?: ImageSourcePropType;
-  containerStyle?: any;
-  icon?: NameIcon;
+  containerStyle?: StyleProp<ViewStyle>;
+  onPress?: () => void;
+  onDelete?: () => void;
 };
 
 const RenderRoomCard = ({
@@ -23,50 +26,44 @@ const RenderRoomCard = ({
   price,
   descricao,
   containerStyle,
-  icon,
+  onPress,
+  onDelete,
 }: Props) => {
   return (
-    <View style={[stylesRoom.principal]}>
-      <View style={[stylesRoom.container, containerStyle]}>
-        {!!image && (
-          <View>
+    <TouchableOpacity onPress={onPress} activeOpacity={1}>
+      <View style={stylesRoom.principal}>
+        <View style={[stylesRoom.container, containerStyle]}>
+          {image && (
             <Image
               style={stylesRoom.imagem}
               source={image}
               resizeMode="cover"
             />
-          </View>
-        )}
+          )}
 
-        <View style={stylesRoom.infoSection}>
-          <View style={{ display: "flex", flexDirection: "row" }}>
+          <View style={stylesRoom.infoSection}>
             <Text style={stylesRoom.title}>{name}</Text>
 
-            {!!icon && (
-              <View style={{ left: 5, top: 1 }}>
-                {icon.lib === "MaterialIcons" && (
-                  <MaterialIcons name={icon.name} size={23} color="black" />
-                )}
-                {icon.lib === "FontAwesome5" && (
-                  <FontAwesome5 name={icon.name} size={20} color="black" />
-                )}
-                {icon.lib === "FontAwesome6" && (
-                  <FontAwesome6 name={icon.name} size={23} color="black" />
-                )}
-              </View>
-            )}
+            <Text style={stylesRoom.price}>
+              <Text style={stylesRoom.priceValue}>R$ {price}</Text> por noite
+            </Text>
           </View>
-          <Text style={stylesRoom.price}>
-            <Text style={{ fontWeight: "bold", color: "blue", fontSize: 16 }}>
-              R$ {price}
-            </Text>{" "}
-            por noite
-          </Text>
+
+          <Text style={stylesRoom.descricao}>{descricao}</Text>
+
+          {onDelete && (
+            <TouchableOpacity
+              style={stylesRoom.botaoFechar}
+              onPress={onDelete}
+              activeOpacity={0.7}
+            >
+              <Text style={stylesRoom.text}>Apagar quarto</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        <Text style={stylesRoom.descricao}>{descricao}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
-export default RenderRoomCard;
+export default memo(RenderRoomCard);

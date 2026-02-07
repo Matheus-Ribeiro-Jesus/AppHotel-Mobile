@@ -35,6 +35,10 @@ principal: {
     gap: 5,
   },
 
+  text:{
+    color: "white",
+  },
+
   title: {
     fontSize: 16,
     fontWeight: "bold",
@@ -46,4 +50,22 @@ principal: {
     fontWeight: "500",
     color: "#050505ff",
   },
+
+  botaoFechar: {
+    marginTop: 44,
+    left: 135,
+    backgroundColor: "black",
+    padding: 6,
+    width: width * 0.27,
+    alignItems: "center",
+    borderRadius: 10,   
+
+  },
+
+  priceValue: {
+  fontWeight: "bold",
+  color: "blue",
+  fontSize: 16,
+},
+
 });
