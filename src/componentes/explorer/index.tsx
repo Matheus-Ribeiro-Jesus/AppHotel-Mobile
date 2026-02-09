@@ -17,7 +17,7 @@ import DateSelector from '@/componentes/ui/datePicker';
 import TextField from '@/componentes/ui/TextField';
 import InputSpin from '../ui/InputSpin';
 
-const { width } = Dimensions.get('window');
+const { width, height} = Dimensions.get('window');
 
 const RenderExplorer = () => {
   const [checkIn, setCheckIn] = useState('');
@@ -102,7 +102,7 @@ const RenderExplorer = () => {
                 value={checkOut}
                 editable={false}
                 pointerEvents="none"
-                style={{ paddingRight: 40 }}
+                style={{ paddingRight: 40}}
               />
               <Ionicons
                 name="calendar-outline"
@@ -257,13 +257,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   wrapperCampo: {
+    backgroundColor: '#f5f5f5',
     position: 'relative',
   },
   iconeCampo: {
     position: 'absolute',
     right: 12,
     top: '50%',
-    transform: [{ translateY: -10 }],
+    transform: [{ translateY: -6 }],
     color: '#666',
   },
   secaoHospedes: {
@@ -400,11 +401,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   conteudoModal: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'none',
     borderRadius: 16,
-    width: width * 0.92,
-    padding: 16,
+    width: width * 0.82,
     maxHeight: '82%',
+    
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,

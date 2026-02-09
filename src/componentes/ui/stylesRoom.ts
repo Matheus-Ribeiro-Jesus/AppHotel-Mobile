@@ -52,11 +52,11 @@ principal: {
   },
 
   botaoFechar: {
-    marginTop: 44,
+    marginTop: width * 0.04,
     left: 135,
     backgroundColor: "black",
-    padding: 6,
-    width: width * 0.27,
+    padding: 7,
+    width: width * 0.28,
     alignItems: "center",
     borderRadius: 10,   
 
