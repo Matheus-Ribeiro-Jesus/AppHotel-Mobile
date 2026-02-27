@@ -1,116 +1,243 @@
-import AuthContainer from "@/componentes/ui/AuthContainer";
-import TextField from "@/componentes/ui/TextField";
+import AuthContainer from "../ui/AuthContainer";
+import TextField from "../ui/TextField";
 import PasswordField from "../ui/PasswordField";
 import React, { useMemo, useState } from "react";
-import { TouchableOpacity, Text, View, Dimensions, Alert } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  View,
+  Dimensions,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { global } from "../ui/style";
-import { login } from "@/componentes/login/login";
+import { register } from "@/componentes/register/style"; // ajuste o caminho se necessário
 import { useRouter } from "expo-router";
-import AuthContext, { useAuth } from "@/contexts/AuthContext";
+import Icon from "react-native-vector-icons/Ionicons";
+import { Masks, useMaskedInputProps } from "react-native-mask-input";
+import { useAuth } from "@/contexts/AuthContext";
 
+// Validação simples de email
 function isValidEmail(email: string) {
-  return /^[^\s@&='!"]@[^\s@&='!"].[^\s@&='!"]$/.test(email);
+  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 }
 
-const RenderLogin = () => {
+const RenderRegister = () => {
   const router = useRouter();
-  const { signIn } = useAuth();
-  
+  const { signUp } = useAuth();
+
+  const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const propsCpf = useMaskedInputProps({
+    value: cpf,
+    onChangeText: setCpf,
+    mask: [/\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, "-", /\d/, /\d/],
+  });
+
+  const propsTelefone = useMaskedInputProps({
+    value: telefone,
+    onChangeText: setTelefone,
+    mask: Masks.BRL_PHONE,
+  });
+
   const [touched, setTouched] = useState<{
+    nome?: boolean;
+    cpf?: boolean;
+    telefone?: boolean;
     email?: boolean;
     password?: boolean;
+    confirmPassword?: boolean;
   }>({});
 
-  const erros = useMemo(() => {
+  const errors = useMemo(() => {
     const error: Record<string, string> = {};
-    if (touched.email && !email) error.email = "Email obrigatorio";
-    if (touched.password && !password) error.password = "Senha obrigatoria";
-    if (touched.password && password && password.length < 6)
-      error.password = "Minimo de 6 caracteres para a senha";
-    if (touched.email && email && !isValidEmail(email))
-      error.email = "Digite um email válido";
+
+    // Nome
+    if (touched.nome && !nome.trim()) {
+      error.nome = "Nome obrigatório";
+    }
+
+    // CPF – CORRIGIDO: conta apenas dígitos
+    if (touched.cpf) {
+      const cleanCpf = cpf.replace(/\D/g, "");
+      if (!cpf.trim()) {
+        error.cpf = "CPF obrigatório";
+      } else if (cleanCpf.length !== 11) {
+        error.cpf = "CPF inválido (precisa ter 11 números)";
+      }
+    }
+
+    // Telefone – similar ao CPF
+    if (touched.telefone) {
+      const cleanTel = telefone.replace(/\D/g, "");
+      if (!telefone.trim()) {
+        error.telefone = "Telefone obrigatório";
+      } else if (cleanTel.length < 10 || cleanTel.length > 11) {
+        error.telefone = "Telefone inválido (10 ou 11 dígitos)";
+      }
+    }
+
+    // Email
+    if (touched.email) {
+      if (!email.trim()) {
+        error.email = "Email obrigatório";
+      } else if (!isValidEmail(email.trim())) {
+        error.email = "Digite um email válido";
+      }
+    }
+
+    // Senha
+    if (touched.password) {
+      if (!password) {
+        error.password = "Senha obrigatória";
+      } else if (password.length < 6) {
+        error.password = "Mínimo 6 caracteres";
+      }
+    }
+
+    // Confirmação de senha
+    if (touched.confirmPassword) {
+      if (!confirmPassword) {
+        error.confirmPassword = "Confirme a senha";
+      } else if (password && confirmPassword !== password) {
+        error.confirmPassword = "As senhas não coincidem";
+      }
+    }
 
     return error;
-  }, [email, password, touched]);
+  }, [nome, cpf, telefone, email, password, confirmPassword, touched]);
 
   const canSubmit =
-    email && password && Object.keys(erros).length === 0 && !loading;
+    nome.trim() &&
+    cpf &&
+    telefone &&
+    email.trim() &&
+    password &&
+    confirmPassword &&
+    Object.keys(errors).length === 0 &&
+    !loading;
 
-const handleSubmit = async () => {
-        try {
-            setLoading(true);
- 
-console.log("Tentando logar com:", { email, password });
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
 
-            await signIn(email.trim(), password.trim());
- 
-            Alert.alert("Login bem-sucedido!");
-            router.replace("/(tabs)/explorer");
-        }
-        catch (erro) {Alert.alert("Erro", "Falha ao tentar logar!");}
-        finally {setLoading(false);}
-    };
+      await signUp({
+        nome: nome.trim(),
+        cpf,
+        telefone,
+        email: email.trim(),
+        senha: password,
+      });
 
-  const { width, height } = Dimensions.get("window");
+      Alert.alert(
+        "Sucesso",
+        "Conta criada com sucesso! Você já está logado.",
+        [{ text: "OK", onPress: () => router.replace("/(tabs)/explorer") }]
+      );
+    } catch (err: any) {
+      Alert.alert("Erro no cadastro", err.message || "Não foi possível criar a conta. Tente novamente.");
+      console.log("[REGISTER ERROR]", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const { height } = Dimensions.get("window");
+
   return (
     <AuthContainer
-      title="Bem-vindo ao Transilvania"
-      subtitle="Por favor insira seus dados"
+      title="Cadastro de Usuário"
+      subtitle="Hotel Transilvania"
       logo={require("../../../assets/images/logo.png")}
+      headerLeft={
+        <TouchableOpacity onPress={() => router.back()}>
+          <Icon name="arrow-back" size={28} color="#fff" />
+        </TouchableOpacity>
+      }
     >
-      <View style={[global.content, login.texts]}>
+      <View style={[global.content, register.inputs]}>
         <TextField
-          label="E-mail"
-          icon={{ lib: "MaterialIcons", name: "email" }}
-          placeholder="user@email.com"
-          keyboardType="email-address"
+          label="Nome"
+          placeholder="Digite seu nome"
+          value={nome}
+          onChangeText={setNome}
+          onBlur={() => setTouched((p) => ({ ...p, nome: true }))}
+          errorText={errors.nome}
+        />
+
+        <TextField
+          {...propsCpf}
+          label="CPF"
+          placeholder="000.000.000-00"
+          keyboardType="numeric"
+          onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
+          errorText={errors.cpf}
+        />
+
+        <TextField
+          {...propsTelefone}
+          label="Telefone"
+          placeholder="(15) 99999-9999"
+          keyboardType="phone-pad"
+          onBlur={() => setTouched((p) => ({ ...p, telefone: true }))}
+          errorText={errors.telefone}
+        />
+
+        <TextField
+          label="Email"
+          placeholder="email@exemplo.com"
           value={email}
-          onChangeText={(input) => setEmail(input)}
-          errorText={erros.email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onBlur={() => setTouched((p) => ({ ...p, email: true }))}
+          errorText={errors.email}
         />
 
         <PasswordField
           label="Senha"
-          icon={{ lib: "MaterialIcons", name: "lock" }}
-          placeholder="*********"
+          placeholder="Mínimo 6 caracteres"
           value={password}
-          onChangeText={(input) => setPassword(input)}
-          errorText={erros.password}
+          onChangeText={setPassword}
+          onBlur={() => setTouched((p) => ({ ...p, password: true }))}
+          errorText={errors.password}
         />
+
+        <PasswordField
+          label="Confirmar senha"
+          placeholder="Digite novamente"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          onBlur={() => setTouched((p) => ({ ...p, confirmPassword: true }))}
+          errorText={errors.confirmPassword}
+        />
+
         <TouchableOpacity
-          style={[global.primaryButton]}
+          style={[
+            register.buttonPrimary,
+            { opacity: canSubmit ? 1 : 0.6 },
+          ]}
+          disabled={!canSubmit || loading}
           onPress={handleSubmit}
-          disabled={!canSubmit}
         >
-          <Text style={global.primaryButtonText}>Entrar</Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={register.textContent}>Criar conta</Text>
+          )}
         </TouchableOpacity>
 
-        <View style={{ alignItems: "center", marginTop: height * 0.03 }}>
-          <TouchableOpacity
-            onPress={() => router.push("/(auth)/resetPassword")}
-          >
-            <Text style={{ color: "#000000ff", fontSize: 17, fontWeight: 600 }}>
-              Esqueci minha senha
-            </Text>
-          </TouchableOpacity>
-          <View
-            style={{
-              backgroundColor: "rgb(0, 0, 0)",
-              width: width * 0.5,
-              height: height * 0.001,
-              borderRadius: 10,
-              marginTop: height * 0.02,
-            }}
-          ></View>
-          <TouchableOpacity
-            onPress={() => router.push("/(auth)/register")}
-            style={{ marginTop: height * 0.03 }}
-          >
-            <Text style={{ color: "#1f1e1eff", fontWeight: 600, fontSize: 17 }}>
-              Não possui uma conta? Cadastre-se agora!
+        <View style={{ alignItems: "center", marginTop: height * 0.04 }}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={{ color: "black", fontWeight: "600", fontSize: 16 }}>
+              Já possui uma conta?{" "}
+              <Text style={{ color: "grey" }}>Faça Login</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -119,4 +246,4 @@ console.log("Tentando logar com:", { email, password });
   );
 };
 
-export default RenderLogin;
+export default RenderRegister;
