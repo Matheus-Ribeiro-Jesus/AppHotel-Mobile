@@ -6,6 +6,7 @@ import { TouchableOpacity, Text, View, Dimensions, Alert } from "react-native";
 import { global } from "../ui/style";
 import { login } from "@/componentes/login/login";
 import { useRouter } from "expo-router";
+import AuthContext, { useAuth } from "@/contexts/AuthContext";
 
 function isValidEmail(email: string) {
   return /^[^\s@&='!"]@[^\s@&='!"].[^\s@&='!"]$/.test(email);
@@ -13,6 +14,8 @@ function isValidEmail(email: string) {
 
 const RenderLogin = () => {
   const router = useRouter();
+  const { signIn } = useAuth();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,29 +39,20 @@ const RenderLogin = () => {
   const canSubmit =
     email && password && Object.keys(erros).length === 0 && !loading;
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      console.log("[LOGIN] Tentando login com: ", {
-        email, 
-        password
-      });
-      await new Promise((req) => setTimeout(req, 2000));
-      if(email === "a" && password === "a"){
-        Alert.alert("Login bem sucedido");
-        router.replace("/(tabs)/explorer");
-      }else{
-        Alert.alert("Login invalido");
-        return;
+const handleSubmit = async () => {
+        try {
+            setLoading(true);
+ 
+console.log("Tentando logar com:", { email, password });
 
-      }
-    } catch (error) {
-      Alert.alert("Erro", "Falha ao tentar logar");
-    }
-    finally{
-      setLoading(false); 
-    }
-  };
+            await signIn(email.trim(), password.trim());
+ 
+            Alert.alert("Login bem-sucedido!");
+            router.replace("/(tabs)/explorer");
+        }
+        catch (erro) {Alert.alert("Erro", "Falha ao tentar logar!");}
+        finally {setLoading(false);}
+    };
 
   const { width, height } = Dimensions.get("window");
   return (

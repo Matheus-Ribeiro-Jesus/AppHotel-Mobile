@@ -5,10 +5,19 @@ back(): retorna a tela anterior empilhada
 replace(): substituir uma tela por outra
 */
 
-import { Stack } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
+import { Redirect, Stack } from "expo-router";
 import React from "react";
 
 const AuthLayout = () => {
+    const {token, isLoading} = useAuth();
+
+    if(isLoading) return null; // ou um componente de loading   
+    if(token) {
+        return <Redirect href="/(tabs)/explorer" />
+    }
+
+
     return (
         <Stack screenOptions={{headerShown: false}}>
             <Stack.Screen name="index" options={{ title: "Login" }}  />

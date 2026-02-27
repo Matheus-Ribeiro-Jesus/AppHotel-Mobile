@@ -1,8 +1,17 @@
+import { useAuth } from '@/contexts/AuthContext';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React from "react";
 
 export default function TabLayout() {
+  const {token, isLoading} = useAuth();
+  if(isLoading) return null;
+
+  if(!token){
+    return <Redirect href="/(auth)/" />;
+  }
+
+
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: 'grey', headerShown: false }}>
       <Tabs.Screen

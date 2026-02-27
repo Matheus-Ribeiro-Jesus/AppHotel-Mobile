@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useMemo} from "react";
+import React, { createContext, useState, useEffect, useMemo, useContext} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "@/constants/api";
 
@@ -57,9 +57,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         [token, isLoading]
     );
     
-
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 
 };
+
+export const useAuth = () => {
+    const ctx = useContext(AuthContext);
+    if(!ctx) throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+    return ctx;
+};
+
 
 export default AuthProvider;

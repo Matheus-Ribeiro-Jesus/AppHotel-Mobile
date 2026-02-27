@@ -14,10 +14,19 @@ import { Ionicons } from '@expo/vector-icons';
 import AuthContainer from '../ui/AuthContainer';
 import TextField from '../ui/TextField';
 import MaskInput, { useMaskedInputProps, Masks } from 'react-native-mask-input';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
 export default function AccountForm() {
+  const { signOut } = useAuth();
+  const router = useRouter();
+  const logout = async () => { 
+    await signOut();
+    Alert.alert("Logout bem-sucedido!");
+    router.replace("/(auth)/");
+  }
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -144,6 +153,11 @@ export default function AccountForm() {
           <TouchableOpacity style={styles.btnSalvar} onPress={salvarDados}>
             <Text style={styles.textoBtnSalvar}>Salvar alterações</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={logout}>
+            <Text style={styles.textoSair}>Sair</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
 
@@ -250,6 +264,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 10,
   },
+
+  textoSair: {
+    color: '#ef4444',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+
   btnSalvar: {
     backgroundColor: '#10b981',
     paddingVertical: 18,
