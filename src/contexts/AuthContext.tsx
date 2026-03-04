@@ -1,6 +1,6 @@
-import React, { createContext, useState, useEffect, useMemo, useContext } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "@/constants/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type AuthContextProps = {
     token: string | null;
@@ -48,8 +48,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         // back-end retorna {token: "..."} quando sucesso
-        const data = await res.json();
-        const tokenFromAPI = data.token;
+        const tokenFromAPI = await res.json();
         await AsyncStorage.setItem("token", tokenFromAPI);
         setToken(tokenFromAPI);
     }
@@ -70,7 +69,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const cleanCpf = cpf.replace(/\D/g, "");
         const cleanTelefone = telefone.replace(/\D/g, "");
 
-        // Validação básica após limpeza (opcional, mas recomendado para consistência)
         if (cleanCpf.length !== 11) {
             throw new Error("CPF inválido (deve ter 11 dígitos)");
         }

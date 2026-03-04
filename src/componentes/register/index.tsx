@@ -1,22 +1,31 @@
-import AuthContainer from "../ui/AuthContainer";
-import TextField from "../ui/TextField";
-import PasswordField from "../ui/PasswordField";
 import React, { useMemo, useState } from "react";
-import { TouchableOpacity, Text, View, Dimensions, Alert } from "react-native";
-import { global } from "../ui/style";
-import { register } from "@/componentes/register/style";
+import {
+  TouchableOpacity,
+  Text,
+  View,
+  Dimensions,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Masks, useMaskedInputProps } from "react-native-mask-input";
 
-// Validação simples de email
-function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+import AuthContainer from "../ui/AuthContainer";
+import TextField from "../ui/TextField";
+import PasswordField from "../ui/PasswordField";
 
+import { global } from "../ui/style";
+import { register } from "@/componentes/register/style";
+
+import { useAuth } from "@/contexts/AuthContext"; 
+
+// Validação simples de email
+const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const RenderRegister = () => {
   const router = useRouter();
+  const { signUp } = useAuth();
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -26,103 +35,97 @@ const RenderRegister = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const propsCpf = useMaskedInputProps({
+  const { height } = Dimensions.get("window");
+
+  // Máscaras
+  const cpfMaskProps = useMaskedInputProps({
     value: cpf,
     onChangeText: setCpf,
     mask: [
-      /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, "-", /\d/, /\d/
+      /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, ".", /\d/, /\d/, /\d/, "-", /\d/, /\d/,
     ],
   });
 
-  const propsTelefone = useMaskedInputProps({
+  const telefoneMaskProps = useMaskedInputProps({
     value: telefone,
     onChangeText: setTelefone,
     mask: Masks.BRL_PHONE,
   });
 
-  const [touched, setTouched] = useState<{
-    nome?: boolean;
-    cpf?: boolean;
-    telefone?: boolean;
-    email?: boolean;
-    password?: boolean;
-    confirmPassword?: boolean;
-  }>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  // ----------- VALIDACOES -----------
+  // Erros
   const errors = useMemo(() => {
-    const error: Record<string, string> = {};
+    const err: Record<string, string> = {};
 
-    if (touched.nome && !nome) error.nome = "Nome obrigatório";
+    if (touched.nome && !nome.trim()) err.nome = "Nome obrigatório";
 
-    if (touched.cpf && !cpf) error.cpf = "CPF obrigatório";
-    if (touched.cpf && cpf && cpf.length !== 11)
-      error.cpf = "Digite um CPF válido";
+    if (touched.cpf && !cpf) err.cpf = "CPF obrigatório";
 
-    if (touched.telefone && !telefone) error.telefone = "Telefone obrigatório";
+    if (touched.telefone && !telefone) err.telefone = "Telefone obrigatório";
     if (touched.telefone && telefone && telefone.length < 10)
-      error.telefone = "Digite um telefone válido";
+      err.telefone = "Digite um telefone válido";
 
-    if (touched.email && !email) error.email = "Email obrigatório";
+    if (touched.email && !email.trim()) err.email = "Email obrigatório";
     if (touched.email && email && !isValidEmail(email))
-      error.email = "Digite um email válido";
+      err.email = "Digite um email válido";
 
-    if (touched.password && !password)
-      error.password = "Senha obrigatória";
-
+    if (touched.password && !password) err.password = "Senha obrigatória";
     if (touched.password && password.length < 6)
-      error.password = "Mínimo de 6 caracteres";
+      err.password = "Mínimo de 6 caracteres";
 
     if (touched.confirmPassword && !confirmPassword)
-      error.confirmPassword = "Confirme sua senha";
+      err.confirmPassword = "Confirme sua senha";
 
     if (
       touched.confirmPassword &&
       confirmPassword &&
       password &&
       confirmPassword !== password
-    )
-      error.confirmPassword = "As senhas não coincidem";
+    ) {
+      err.confirmPassword = "As senhas não coincidem";
+    }
 
-    return error;
+    return err;
   }, [nome, cpf, telefone, email, password, confirmPassword, touched]);
 
-  // ----------- HABILITAR BOTÃO -----------
   const canSubmit =
-    nome &&
+    nome.trim() &&
     cpf &&
     telefone &&
-    email &&
+    email.trim() &&
     password &&
     confirmPassword &&
+    password === confirmPassword &&
     Object.keys(errors).length === 0 &&
     !loading;
 
-  // ----------- SUBMIT -----------
   const handleSubmit = async () => {
+    if (!canSubmit) return;
+
+    setLoading(true);
+
     try {
-      setLoading(true);
-      console.log("[REGISTER] Dados enviados:", {
-        nome,
+      await signUp({
+        nome: nome.trim(),
         cpf,
         telefone,
-        email,
-        password,
+        email: email.trim(),
+        senha: password,
       });
 
-      await new Promise((r) => setTimeout(r, 2000));
-
-      Alert.alert("Conta criada com sucesso!");
-      router.replace("/(auth)");
-
-    } catch (err) {
-      Alert.alert("Erro", "Não foi possível criar sua conta");
+      Alert.alert("Sucesso", "Conta criada com sucesso!");
+      router.replace("/(tabs)/explorer");
+    } catch (err: any) {
+      Alert.alert(
+        "Erro",
+        err.message || "Não foi possível criar sua conta. Tente novamente."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const { height } = Dimensions.get("window");
   return (
     <AuthContainer
       title="Cadastro de Usuário"
@@ -135,33 +138,31 @@ const RenderRegister = () => {
       }
     >
       <View style={[global.content, register.inputs]}>
-
         <TextField
           label="Nome"
           placeholder="Digite seu nome"
           value={nome}
           onChangeText={setNome}
-          onBlur={() => setTouched((p) => ({ ...p, nome: true }))}
+          onBlur={() => setTouched((prev) => ({ ...prev, nome: true }))}
           errorText={errors.nome}
+          autoCapitalize="words"
         />
 
         <TextField
-        {...propsCpf}
           label="CPF"
-          placeholder="00000000000"
+          {...cpfMaskProps}
           value={cpf}
           keyboardType="numeric"
-          onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
+          onBlur={() => setTouched((prev) => ({ ...prev, cpf: true }))}
           errorText={errors.cpf}
         />
 
         <TextField
           label="Telefone"
-          {...propsTelefone}
-          placeholder="15999999999"
+          {...telefoneMaskProps}
           value={telefone}
-          keyboardType="numeric"
-          onBlur={() => setTouched((p) => ({ ...p, telefone: true }))}
+          keyboardType="phone-pad"
+          onBlur={() => setTouched((prev) => ({ ...prev, telefone: true }))}
           errorText={errors.telefone}
         />
 
@@ -170,9 +171,10 @@ const RenderRegister = () => {
           placeholder="email@exemplo.com"
           value={email}
           onChangeText={setEmail}
-          autoCapitalize="none"
           keyboardType="email-address"
-          onBlur={() => setTouched((p) => ({ ...p, email: true }))}
+          autoCapitalize="none"
+          autoCorrect={false}
+          onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
           errorText={errors.email}
         />
 
@@ -181,7 +183,7 @@ const RenderRegister = () => {
           placeholder="********"
           value={password}
           onChangeText={setPassword}
-          onBlur={() => setTouched((p) => ({ ...p, password: true }))}
+          onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
           errorText={errors.password}
         />
 
@@ -190,9 +192,7 @@ const RenderRegister = () => {
           placeholder="********"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
-          onBlur={() =>
-            setTouched((p) => ({ ...p, confirmPassword: true }))
-          }
+          onBlur={() => setTouched((prev) => ({ ...prev, confirmPassword: true }))}
           errorText={errors.confirmPassword}
         />
 
@@ -214,7 +214,6 @@ const RenderRegister = () => {
             </Text>
           </TouchableOpacity>
         </View>
-
       </View>
     </AuthContainer>
   );
