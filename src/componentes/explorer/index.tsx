@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -9,12 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 
 import AuthContainer from '@/componentes/ui/AuthContainer';
 import DateSelector from '@/componentes/ui/datePicker';
 import TextField from '@/componentes/ui/TextField';
+import { useAuth } from '@/contexts/AuthContext';
 import InputSpin from '../ui/InputSpin';
 
 const { width, height} = Dimensions.get('window');
@@ -24,6 +24,7 @@ const RenderExplorer = () => {
   const [checkOut, setCheckOut] = useState('');
   const [qntHospedes, setQntHospedes] = useState(1);
   const [calendario, setCalendario] = useState<'entrada' | 'saida' | null>(null);
+  const { consulta } = useAuth();
 
   const [quantidades, setQuantidades] = useState<{ [key: number]: number }>({});
 
@@ -124,6 +125,21 @@ const RenderExplorer = () => {
               colorMaxGuests="#f80c00b7"
               colorMinGuests="#75f29297"
             />
+          </View>
+
+          <View>
+            <TouchableOpacity style={{ marginTop: 16, backgroundColor: '#e3e4e6', paddingVertical: 10, borderRadius: 10, alignItems: 'center' }}
+              onPress={async () => {
+                try {
+                  console.log(checkIn, checkOut, qntHospedes);
+                  await consulta(checkIn, checkOut, qntHospedes);
+                } catch (error) {
+                  console.error("Erro ao consultar quartos:", error);
+                }
+              }}
+            >
+              <Text>Consultar</Text>
+            </TouchableOpacity>
           </View>
         </View>
 

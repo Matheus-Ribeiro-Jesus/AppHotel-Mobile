@@ -14,14 +14,15 @@ type AuthContextProps = {
         senha: string;
     }) => Promise<void>;
     signOut: () => Promise<void>;
+    consulta: (inicio: string, fim: string, quantidade: number) => Promise<any>;
 };
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Carregar token ao abrir o app 
     useEffect(() => {
         (async () => {
             try {
@@ -36,72 +37,73 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     async function signIn(email: string, senha: string) {
         const res = await fetch(`${API_URL}/login`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, senha }),
         });
-        // back-end retorna erro {erro: "..."} quando falha
+
         if (!res.ok) {
             const error = await res.json().catch(() => null);
             throw new Error(error?.erro || error?.message || "Credenciais inválidas");
         }
 
-        // back-end retorna {token: "..."} quando sucesso
-        const tokenFromAPI = await res.json();
+        const { token: tokenFromAPI } = await res.json();
         await AsyncStorage.setItem("token", tokenFromAPI);
         setToken(tokenFromAPI);
     }
 
-    async function signUp({
-        nome,
-        cpf,
-        telefone,
-        email,
-        senha,
-    }: {
-        nome: string;
-        cpf: string;
-        telefone: string;
-        email: string;
-        senha: string;
-    }) {
-        const cleanCpf = cpf.replace(/\D/g, "");
-        const cleanTelefone = telefone.replace(/\D/g, "");
+    async function consulta(inicio: string, fim: string, quantidade: number) {
+        const url = `${API_URL}/quartosDisponiveis`;  
 
-        if (cleanCpf.length !== 11) {
-            throw new Error("CPF inválido (deve ter 11 dígitos)");
-        }
-        if (cleanTelefone.length < 10 || cleanTelefone.length > 11) {
-            throw new Error("Telefone inválido (deve ter 10 ou 11 dígitos)");
-        }
+        console.log("[DEBUG] URL consultada (POST):", url);
+        console.log("[DEBUG] Body enviado:", { dataInicio: inicio, dataFim: fim, quantidade });
 
-        const res = await fetch(`${API_URL}/login/cadastro`, {
-            method: "POST",
+        const res = await fetch(url, {
+            method: "POST", 
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                nome,
-                cpf: cleanCpf,
-                telefone: cleanTelefone,
-                email,
-                senha,
+                dataInicio: inicio,   
+                dataFim: fim,
+                quantidade
             }),
         });
 
         if (!res.ok) {
-            let errorMessage = "Erro ao criar conta";
+            let errorMessage = "Erro ao consultar quartos";
             try {
                 const errorData = await res.json();
-                errorMessage = errorData.erro || errorData.message || "Falha no cadastro";
-            } catch {}
+                console.log("[DEBUG] Resposta de erro completa do backend:", res.status, errorData);
+                errorMessage = errorData.erro || errorData.message || errorMessage;
+            } catch (e) {
+                console.log("[DEBUG] Sem JSON no erro, status:", res.status);
+            }
             throw new Error(errorMessage);
         }
 
         const data = await res.json();
-        const tokenFromAPI = data.token;
+        console.log("[DEBUG] Dados retornados pelo backend:", data);
+        return data;
+    }
+    async function signUp({ nome, cpf, telefone, email, senha }: { nome: string; cpf: string; telefone: string; email: string; senha: string; }) {
+        const cleanCpf = cpf.replace(/\D/g, "");
+        const cleanTelefone = telefone.replace(/\D/g, "");
 
+        if (cleanCpf.length !== 11) throw new Error("CPF inválido (11 dígitos)");
+        if (cleanTelefone.length < 10 || cleanTelefone.length > 11) throw new Error("Telefone inválido (10 ou 11 dígitos)");
+
+        const res = await fetch(`${API_URL}/login/cadastro`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, cpf: cleanCpf, telefone: cleanTelefone, email, senha }),
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.erro || errorData.message || "Falha no cadastro");
+        }
+
+        const { token: tokenFromAPI } = await res.json();
         if (tokenFromAPI) {
             await AsyncStorage.setItem("token", tokenFromAPI);
             setToken(tokenFromAPI);
@@ -113,9 +115,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(null);
     }
 
-    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut }),
-        [token, isLoading]
-    );
+    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut, consulta }), [token, isLoading]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
