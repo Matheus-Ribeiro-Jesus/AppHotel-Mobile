@@ -34,23 +34,38 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         })();
     }, []);
 
-    async function signIn(email: string, senha: string) {
-        const res = await fetch(`${API_URL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha }),
-        });
+        async function signIn(email: string, senha: string) {
+        try {
+            const url = `${API_URL}/login`;
+            console.log("[LOGIN] URL:", url);
+            console.log("[LOGIN] Body enviado:", { email, senha });
 
-        if (!res.ok) {
-            const error = await res.json().catch(() => null);
-            throw new Error(error?.erro || error?.message || "Credenciais inválidas");
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, senha }),  // confirma que é "senha", não "password"
+            });
+
+            console.log("[LOGIN] Status:", res.status);
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.log("[LOGIN] Erro do backend:", errorText);
+                throw new Error(errorText || "Falha no login");
+            }
+
+            const data = await res.json();
+            console.log("[LOGIN] Token recebido:", data.token);
+
+            await AsyncStorage.setItem("token", data.token);
+            setToken(data.token);
+
+            return data; // opcional
+        } catch (err) {
+            console.error("[LOGIN] Erro completo:", err);
+            throw err;
         }
-
-        const { token: tokenFromAPI } = await res.json();
-        await AsyncStorage.setItem("token", tokenFromAPI);
-        setToken(tokenFromAPI);
     }
-
     async function consulta(inicio: string, fim: string, quantidade: number) {
         const url = `${API_URL}/quartosDisponiveis`;  
 
