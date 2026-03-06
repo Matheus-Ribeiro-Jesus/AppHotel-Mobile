@@ -54,13 +54,13 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 throw new Error(errorText || "Falha no login");
             }
 
-            const data = await res.json();
-            console.log("[LOGIN] Token recebido:", data.token);
+            const tokenAPI = await res.json();
+            console.log("[LOGIN] Token recebido:", tokenAPI);
 
-            await AsyncStorage.setItem("token", data.token);
-            setToken(data.token);
+            await AsyncStorage.setItem("token", tokenAPI);
+            setToken(tokenAPI);
 
-            return data; // opcional
+            return tokenAPI; // opcional
         } catch (err) {
             console.error("[LOGIN] Erro completo:", err);
             throw err;
