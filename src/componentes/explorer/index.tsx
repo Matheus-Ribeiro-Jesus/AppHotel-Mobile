@@ -9,7 +9,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 
 import AuthContainer from '@/componentes/ui/AuthContainer';
@@ -68,8 +69,6 @@ const RenderExplorer = () => {
       setQuartos(data || []);
 
     } catch (error) {
-
-      console.error("Erro ao consultar quartos:", error);
       setQuartos([]);
 
     } finally {
@@ -79,6 +78,25 @@ const RenderExplorer = () => {
 
     }
   };
+
+  const handleAddToCart = (quarto: any) => {
+    // Lógica para adicionar o quarto ao carrinho
+    alert(`Quarto "${quarto.nome}" adicionado ao carrinho!`);
+    
+    addReservationToCard({
+       quartoId: quarto.id,
+       nome: quarto.nome,
+       qtd_cama_casal: quarto.qtd_cama_casal,
+        qtd_cama_solteiro: quarto.qtd_cama_solteiro,
+        preco: Number(quarto.preco),
+        dataInicio: checkIn,
+        dataFim: checkOut,
+        quantidade: qntHospedes
+    });
+
+    Alert.alert("Sucesso", `Quarto "${quarto.nome}" adicionado ao carrinho!`);
+  }
+
 
   return (
 
@@ -132,7 +150,7 @@ const RenderExplorer = () => {
           </TouchableOpacity>
 
           <View style={styles.secaoHospedes}>
-            <Text style={styles.rotulo}>Hóspedes</Text>
+            <Text style={styles.rotulo}>Quantidade de Hóspedes</Text>
 
             <InputSpin
               guests={qntHospedes}
@@ -140,8 +158,8 @@ const RenderExplorer = () => {
               minGuests={1}
               maxGuests={6}
               stepGuests={1}
-              colorMaxGuests="#f80c00b7"
-              colorMinGuests="#75f29297"
+              colorMaxGuests="#ff0d00b7"
+              colorMinGuests="#2fe65a97"
             />
           </View>
 
@@ -152,7 +170,7 @@ const RenderExplorer = () => {
 
             {loading
               ? <ActivityIndicator color="#000" />
-              : <Text>Consultar</Text>
+              : <Text style={styles.textoBtn2}>Consultar</Text>
             }
 
           </TouchableOpacity>
@@ -260,7 +278,7 @@ const RenderExplorer = () => {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.btnReservar}>
+        <TouchableOpacity onPress={handleAddToCart} style={styles.btnReservar}>
           <Text style={styles.textoReservar}>
             Reservar agora
           </Text>
@@ -320,7 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   cabecalhoBusca: {
-    backgroundColor: '#1565c0',
+    backgroundColor: '#0c0c0c',
     paddingVertical: 20,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -350,7 +368,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   wrapperCampo: {
-    backgroundColor: '#f5f5f5',
     position: 'relative',
   },
   iconeCampo: {
@@ -367,10 +384,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#424242',
+    marginTop: 12,
     marginBottom: 8,
   },
   btnConsultar: {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#0c0d0e',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 10,
@@ -444,6 +462,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#424242',
   },
+
+    textoBtn2: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+
   textoQuantidade: {
     fontSize: 14,
     marginHorizontal: 10,
@@ -456,7 +481,7 @@ const styles = StyleSheet.create({
   precoQuarto: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#ef6c00',
+    color: '#2c6ee7',
   },
   unidade: {
     fontSize: 11,
@@ -486,7 +511,7 @@ const styles = StyleSheet.create({
     color: '#212121',
   },
   btnReservar: {
-    backgroundColor: '#1976d2',
+    backgroundColor: '#050505',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 10,
@@ -514,6 +539,11 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 10,
   },
+
 });
 
 export default RenderExplorer;
+function addReservationToCard(arg0: { quartoId: any; nome: any; qtd_cama_casal: any; qtd_cama_solteiro: any; preco: number; dataInicio: string; dataFim: string; quantidade: number; }) {
+  throw new Error('Function not implemented.');
+}
+

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { stylesRoom } from "@/componentes/ui/stylesRoom";
 
-type Infos = {
+type Props = {
   name: string;
   price: number;
   descricao: string;
@@ -28,7 +28,7 @@ const RenderRoomCard = ({
   containerStyle,
   onPress,
   onDelete,
-}: Infos) => {
+}: Props) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={1}>
       <View style={stylesRoom.principal}>

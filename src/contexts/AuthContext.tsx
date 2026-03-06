@@ -2,6 +2,18 @@ import { API_URL } from "@/constants/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
+
+type cartReservations = {
+    quartoId: number;
+    nome: string;
+    qtd_cama_casal: number;
+    qtd_cama_solteiro: number;
+    preco: number;
+    dataInicio: string;
+    dataFim: string;
+    quantidade: number;
+};
+
 type AuthContextProps = {
     token: string | null;
     isLoading: boolean;
@@ -15,6 +27,12 @@ type AuthContextProps = {
     }) => Promise<void>;
     signOut: () => Promise<void>;
     consulta: (inicio: string, fim: string, quantidade: number) => Promise<any>;
+    cartReservations?: cartReservations[];
+    addReservationToCard: (reservation: cartReservations) => void;
+    //Remover itens do carrinho
+    clearCart: () => void;
+    //Criar ordem do pedido com as reservas 
+    
 };
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -22,6 +40,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [cartReservations, setCartReservations] = useState<cartReservations[]>([]);
 
     useEffect(() => {
         (async () => {
@@ -130,7 +149,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(null);
     }
 
-    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut, consulta }), [token, isLoading]);
+    const addReservationToCard = (reservation: cartReservations) => {
+        // Implementar lógica para adicionar reserva ao carrinho
+    };
+
+    const clearCart = () => {
+        // Implementar lógica para limpar o carrinho
+    }
+
+
+    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut, consulta, addReservationToCard, clearCart }), [token, isLoading]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
