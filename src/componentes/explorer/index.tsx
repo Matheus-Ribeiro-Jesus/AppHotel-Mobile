@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator
 } from 'react-native';
 
 import AuthContainer from '@/componentes/ui/AuthContainer';
@@ -17,37 +18,26 @@ import TextField from '@/componentes/ui/TextField';
 import { useAuth } from '@/contexts/AuthContext';
 import InputSpin from '../ui/InputSpin';
 
-const { width, height} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const RenderExplorer = () => {
+
+  const { consulta } = useAuth();
+
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [qntHospedes, setQntHospedes] = useState(1);
   const [calendario, setCalendario] = useState<'entrada' | 'saida' | null>(null);
-  const { consulta } = useAuth();
 
+  const [quartos, setQuartos] = useState<any[]>([]);
   const [quantidades, setQuantidades] = useState<{ [key: number]: number }>({});
 
-  const quartos = [
-    {
-      id: 0,
-      tipo: 'Superior Duplo',
-      imagem: require('../../../assets/images/quartos.jpg'),
-      tamanho: '22 m²',
-      preco: 308.70,
-    },
-    {
-      id: 1,
-      tipo: 'Duplo Premium',
-      imagem: require('../../../assets/images/quartos.jpg'),
-      tamanho: '30 m²',
-      preco: 380.00,
-    },
-  ];
+  const [loading, setLoading] = useState(false);
+  const [consultado, setConsultado] = useState(false);
 
   const precoTotal = quartos.reduce((soma, quarto) => {
     const qtd = quantidades[quarto.id] || 0;
-    return soma + quarto.preco * qtd;
+    return soma + Number(quarto.preco) * qtd;
   }, 0);
 
   const atualizarQuantidade = (quartoId: number, delta: number) => {
@@ -61,17 +51,50 @@ const RenderExplorer = () => {
     setCalendario(tipo);
   };
 
+  const consultarQuartos = async () => {
+
+    if (!checkIn || !checkOut) {
+      alert("Selecione check-in e check-out");
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+      setConsultado(false);
+
+      const data = await consulta(checkIn, checkOut, qntHospedes);
+
+      setQuartos(data || []);
+
+    } catch (error) {
+
+      console.error("Erro ao consultar quartos:", error);
+      setQuartos([]);
+
+    } finally {
+
+      setLoading(false);
+      setConsultado(true);
+
+    }
+  };
+
   return (
+
     <AuthContainer SafeArea2={{ backgroundColor: '#f8f9fa' }}>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
+
         <View style={styles.cabecalhoBusca}>
           <Text style={styles.tituloCabecalho}>Escolher quartos</Text>
         </View>
 
         <View style={styles.cardDatas}>
+
           <Text style={styles.tituloDatas}>Datas da reserva</Text>
 
           <TouchableOpacity onPress={() => abrirCalendario('entrada')}>
@@ -82,13 +105,10 @@ const RenderExplorer = () => {
                 placeholder="Selecione a data"
                 value={checkIn}
                 editable={false}
-                pointerEvents="none"
-                style={{ paddingRight: 40 }}
               />
               <Ionicons
                 name="calendar-outline"
                 size={20}
-                color="#666"
                 style={styles.iconeCampo}
               />
             </View>
@@ -102,13 +122,10 @@ const RenderExplorer = () => {
                 placeholder="Selecione a data"
                 value={checkOut}
                 editable={false}
-                pointerEvents="none"
-                style={{ paddingRight: 40}}
               />
               <Ionicons
                 name="calendar-outline"
                 size={20}
-                color="#666"
                 style={styles.iconeCampo}
               />
             </View>
@@ -116,6 +133,7 @@ const RenderExplorer = () => {
 
           <View style={styles.secaoHospedes}>
             <Text style={styles.rotulo}>Hóspedes</Text>
+
             <InputSpin
               guests={qntHospedes}
               onSelectSpin={setQntHospedes}
@@ -127,46 +145,65 @@ const RenderExplorer = () => {
             />
           </View>
 
-          <View>
-            <TouchableOpacity style={{ marginTop: 16, backgroundColor: '#e3e4e6', paddingVertical: 10, borderRadius: 10, alignItems: 'center' }}
-              onPress={async () => {
-                try {
-                  console.log(checkIn, checkOut, qntHospedes);
-                  await consulta(checkIn, checkOut, qntHospedes);
-                } catch (error) {
-                  console.error("Erro ao consultar quartos:", error);
-                }
-              }}
-            >
-              <Text>Consultar</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.btnConsultar}
+            onPress={consultarQuartos}
+          >
+
+            {loading
+              ? <ActivityIndicator color="#000" />
+              : <Text>Consultar</Text>
+            }
+
+          </TouchableOpacity>
+
         </View>
 
+
         <View style={styles.listaQuartos}>
+
+          {loading && (
+            <ActivityIndicator size="large" />
+          )}
+
+          {consultado && quartos.length === 0 && (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>
+              Nenhum quarto disponível para essas datas
+            </Text>
+          )}
+
           {quartos.map((quarto) => {
+
             const qtd = quantidades[quarto.id] || 0;
+
             return (
+
               <View key={quarto.id} style={styles.cardQuarto}>
+
                 <Image
-                  source={quarto.imagem}
+                  source={
+                    quarto.fotos?.length
+                      ? { uri: quarto.fotos[0].url }
+                      : require('../../../assets/images/quartos.jpg')
+                  }
                   style={styles.imagemQuarto}
                   resizeMode="cover"
                 />
 
                 <View style={styles.detalhesQuarto}>
+
                   <Text style={styles.tituloQuarto} numberOfLines={1}>
-                    {quarto.tipo}
+                    {quarto.nome}
                   </Text>
 
-                  <View style={styles.linhaInfo}>
-                    <Ionicons name="people-outline" size={16} color="#616161" />
-                  </View>
-
-                  <Text style={styles.infoQuarto}>Tamanho: {quarto.tamanho}</Text>
+                  <Text style={styles.infoQuarto}>
+                    {quarto.qtd_cama_casal} casal • {quarto.qtd_cama_solteiro} solteiro
+                  </Text>
 
                   <View style={styles.linhaPreco}>
+
                     <View style={styles.controleQuantidade}>
+
                       <TouchableOpacity
                         style={styles.btnSpin}
                         onPress={() => atualizarQuantidade(quarto.id, -1)}
@@ -174,7 +211,9 @@ const RenderExplorer = () => {
                         <Text style={styles.textoBtn}>-</Text>
                       </TouchableOpacity>
 
-                      <Text style={styles.textoQuantidade}>{qtd}</Text>
+                      <Text style={styles.textoQuantidade}>
+                        {qtd}
+                      </Text>
 
                       <TouchableOpacity
                         style={styles.btnSpin}
@@ -182,59 +221,97 @@ const RenderExplorer = () => {
                       >
                         <Text style={styles.textoBtn}>+</Text>
                       </TouchableOpacity>
+
                     </View>
 
                     <View style={styles.containerPreco}>
+
                       <Text style={styles.precoQuarto}>
-                        R$ {quarto.preco.toFixed(2)}
+                        R$ {Number(quarto.preco).toFixed(2)}
                       </Text>
-                      <Text style={styles.unidade}>/ noite</Text>
+
+                      <Text style={styles.unidade}>
+                        / noite
+                      </Text>
+
                     </View>
+
                   </View>
+
                 </View>
+
               </View>
-            );
+
+            )
+
           })}
+
         </View>
+
       </ScrollView>
 
+
       <View style={styles.rodape}>
+
         <View>
           <Text style={styles.rotuloTotal}>Total</Text>
-          <Text style={styles.valorTotal}>R$ {precoTotal.toFixed(2)}</Text>
+          <Text style={styles.valorTotal}>
+            R$ {precoTotal.toFixed(2)}
+          </Text>
         </View>
 
         <TouchableOpacity style={styles.btnReservar}>
-          <Text style={styles.textoReservar}>Reservar agora</Text>
+          <Text style={styles.textoReservar}>
+            Reservar agora
+          </Text>
         </TouchableOpacity>
+
       </View>
 
+
       {calendario && (
+
         <Modal
-          visible={true}
-          transparent={true}
+          visible
+          transparent
           animationType="fade"
           onRequestClose={() => setCalendario(null)}
         >
+
           <TouchableOpacity
             style={styles.overlayModal}
             activeOpacity={1}
             onPress={() => setCalendario(null)}
           >
+
             <View style={styles.conteudoModal}>
+
               <DateSelector
                 onSelectDate={(data) => {
-                  if (calendario === 'entrada') setCheckIn(data);
-                  if (calendario === 'saida') setCheckOut(data);
+
+                  if (calendario === 'entrada')
+                    setCheckIn(data);
+
+                  if (calendario === 'saida')
+                    setCheckOut(data);
+
                   setCalendario(null);
+
                 }}
               />
+
             </View>
+
           </TouchableOpacity>
+
         </Modal>
+
       )}
+
     </AuthContainer>
+
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -291,6 +368,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#424242',
     marginBottom: 8,
+  },
+  btnConsultar: {
+    backgroundColor: '#1976d2',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
   },
   listaQuartos: {
     paddingHorizontal: 16,
