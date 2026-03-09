@@ -41,13 +41,10 @@ const RenderDatePicker = ({ onSelectDate }: Props) => {
         }}
         style={{
           borderRadius: 15,
-          width: width * 0.69,
+          width: width * 0.88,
           zIndex: 1,
         }}
-        // ✅ funciona corretamente
         onSelectedChange={handleChange}
-
-        // ✅ workaround do bug da lib
         onDateChange={handleChange}
       />
     </View>

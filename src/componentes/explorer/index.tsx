@@ -1,16 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   Dimensions,
-  Image,
+  ImageBackground,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator,
-  Alert
 } from 'react-native';
 
 import AuthContainer from '@/componentes/ui/AuthContainer';
@@ -19,531 +19,465 @@ import TextField from '@/componentes/ui/TextField';
 import { useAuth } from '@/contexts/AuthContext';
 import InputSpin from '../ui/InputSpin';
 
-const { width } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const RenderExplorer = () => {
+type Quarto = {
+  id: number;
+  nome: string;
+  preco: string | number;
+  qtd_cama_casal: number;
+  qtd_cama_solteiro: number;
+  fotos?: Array<{ url: string }>;
+};
 
+type ReservationPayload = {
+  quartoId: number;
+  nome: string;
+  qtd_cama_casal: number;
+  qtd_cama_solteiro: number;
+  preco: number;
+  dataInicio: string;
+  dataFim: string;
+  quantidade: number;
+};
+
+const RenderExplorer: React.FC = () => {
   const { consulta } = useAuth();
 
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [qntHospedes, setQntHospedes] = useState(1);
-  const [calendario, setCalendario] = useState<'entrada' | 'saida' | null>(null);
-
-  const [quartos, setQuartos] = useState<any[]>([]);
-  const [quantidades, setQuantidades] = useState<{ [key: number]: number }>({});
-
+  const [calendarioAberto, setCalendarioAberto] = useState<'entrada' | 'saida' | null>(null);
+  const [quartos, setQuartos] = useState<Quarto[]>([]);
+  const [quantidades, setQuantidades] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(false);
-  const [consultado, setConsultado] = useState(false);
+  const [jaConsultou, setJaConsultou] = useState(false);
 
-  const precoTotal = quartos.reduce((soma, quarto) => {
-    const qtd = quantidades[quarto.id] || 0;
-    return soma + Number(quarto.preco) * qtd;
-  }, 0);
+  const precoTotal = useMemo(() => {
+    return quartos.reduce((total, quarto) => {
+      const qtd = quantidades[quarto.id] || 0;
+      return total + Number(quarto.preco) * qtd;
+    }, 0);
+  }, [quartos, quantidades]);
 
   const atualizarQuantidade = (quartoId: number, delta: number) => {
-    setQuantidades((anterior) => ({
-      ...anterior,
-      [quartoId]: Math.max(0, (anterior[quartoId] || 0) + delta),
+    setQuantidades((prev) => ({
+      ...prev,
+      [quartoId]: Math.max(0, (prev[quartoId] || 0) + delta),
     }));
   };
 
-  const abrirCalendario = (tipo: 'entrada' | 'saida') => {
-    setCalendario(tipo);
+  const consultarDisponibilidade = async () => {
+    if (!checkIn || !checkOut) {
+      Alert.alert('Atenção', 'Selecione check-in e check-out.');
+      return;
+    }
+    setLoading(true);
+    setJaConsultou(false);
+    try {
+      const resultado = await consulta(checkIn, checkOut, qntHospedes);
+      setQuartos(resultado || []);
+    } catch (err) {
+      setQuartos([]);
+      Alert.alert('Erro', 'Falha ao consultar quartos.');
+    } finally {
+      setLoading(false);
+      setJaConsultou(true);
+    }
   };
 
-  const consultarQuartos = async () => {
-
-    if (!checkIn || !checkOut) {
-      alert("Selecione check-in e check-out");
+  const adicionarAoCarrinho = (quarto: Quarto) => {
+    const qtd = quantidades[quarto.id] || 0;
+    if (qtd === 0) {
+      Alert.alert('Atenção', 'Escolha pelo menos 1 quarto.');
       return;
     }
 
-    try {
+    const payload: ReservationPayload = {
+      quartoId: quarto.id,
+      nome: quarto.nome,
+      qtd_cama_casal: quarto.qtd_cama_casal,
+      qtd_cama_solteiro: quarto.qtd_cama_solteiro,
+      preco: Number(quarto.preco),
+      dataInicio: checkIn,
+      dataFim: checkOut,
+      quantidade: qtd,
+    };
 
-      setLoading(true);
-      setConsultado(false);
-
-      const data = await consulta(checkIn, checkOut, qntHospedes);
-
-      setQuartos(data || []);
-
-    } catch (error) {
-      setQuartos([]);
-
-    } finally {
-
-      setLoading(false);
-      setConsultado(true);
-
-    }
+    addReservationToCard(payload);
+    Alert.alert('Adicionado!', `${qtd} × ${quarto.nome} no carrinho.`);
   };
 
-  const handleAddToCart = (quarto: any) => {
-    // Lógica para adicionar o quarto ao carrinho
-    alert(`Quarto "${quarto.nome}" adicionado ao carrinho!`);
-    
-    addReservationToCard({
-       quartoId: quarto.id,
-       nome: quarto.nome,
-       qtd_cama_casal: quarto.qtd_cama_casal,
-        qtd_cama_solteiro: quarto.qtd_cama_solteiro,
-        preco: Number(quarto.preco),
-        dataInicio: checkIn,
-        dataFim: checkOut,
-        quantidade: qntHospedes
-    });
-
-    Alert.alert("Sucesso", `Quarto "${quarto.nome}" adicionado ao carrinho!`);
-  }
-
-
   return (
-
-    <AuthContainer SafeArea2={{ backgroundColor: '#f8f9fa' }}>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={{ paddingBottom: 140 }}
-      >
-
-        <View style={styles.cabecalhoBusca}>
-          <Text style={styles.tituloCabecalho}>Escolher quartos</Text>
+    <AuthContainer SafeArea2={{ backgroundColor: '#f9fafb' }}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Escolher seu quarto</Text>
         </View>
 
-        <View style={styles.cardDatas}>
+        <View style={styles.filterCard}>
+          <Text style={styles.sectionTitle}>Período da estadia</Text>
 
-          <Text style={styles.tituloDatas}>Datas da reserva</Text>
-
-          <TouchableOpacity onPress={() => abrirCalendario('entrada')}>
-            <View style={styles.wrapperCampo}>
+          <TouchableOpacity onPress={() => setCalendarioAberto('entrada')}>
+            <View style={styles.fieldWrapper}>
               <TextField
                 label="Check-in"
                 icon={{ lib: 'Ionicons', name: 'calendar-outline' }}
-                placeholder="Selecione a data"
+                placeholder="Data de entrada"
                 value={checkIn}
                 editable={false}
               />
-              <Ionicons
-                name="calendar-outline"
-                size={20}
-                style={styles.iconeCampo}
-              />
+              <Ionicons name="calendar-outline" size={20} style={styles.fieldIcon} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => abrirCalendario('saida')}>
-            <View style={styles.wrapperCampo}>
+          <TouchableOpacity onPress={() => setCalendarioAberto('saida')}>
+            <View style={styles.fieldWrapper}>
               <TextField
                 label="Check-out"
                 icon={{ lib: 'Ionicons', name: 'calendar-outline' }}
-                placeholder="Selecione a data"
+                placeholder="Data de saída"
                 value={checkOut}
                 editable={false}
               />
-              <Ionicons
-                name="calendar-outline"
-                size={20}
-                style={styles.iconeCampo}
-              />
+              <Ionicons name="calendar-outline" size={20} style={styles.fieldIcon} />
             </View>
           </TouchableOpacity>
 
-          <View style={styles.secaoHospedes}>
-            <Text style={styles.rotulo}>Quantidade de Hóspedes</Text>
-
+          <View style={styles.guestsSection}>
+            <Text style={styles.label}>Hóspedes</Text>
             <InputSpin
               guests={qntHospedes}
               onSelectSpin={setQntHospedes}
               minGuests={1}
-              maxGuests={6}
+              maxGuests={8}
               stepGuests={1}
-              colorMaxGuests="#ff0d00b7"
-              colorMinGuests="#2fe65a97"
+              colorMaxGuests="#ef4444"
+              colorMinGuests="#10b981"
             />
           </View>
 
           <TouchableOpacity
             style={styles.btnConsultar}
-            onPress={consultarQuartos}
+            onPress={consultarDisponibilidade}
+            disabled={loading}
           >
-
-            {loading
-              ? <ActivityIndicator color="#000" />
-              : <Text style={styles.textoBtn2}>Consultar</Text>
-            }
-
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.btnConsultarText}>Ver quartos disponíveis</Text>
+            )}
           </TouchableOpacity>
-
         </View>
 
+        <View style={styles.roomList}>
+          {loading && <ActivityIndicator size="large" color="#6b7280" style={{ marginTop: 50 }} />}
 
-        <View style={styles.listaQuartos}>
-
-          {loading && (
-            <ActivityIndicator size="large" />
+          {jaConsultou && quartos.length === 0 && !loading && (
+            <Text style={styles.noResults}>Nenhum quarto disponível para este período.</Text>
           )}
 
-          {consultado && quartos.length === 0 && (
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>
-              Nenhum quarto disponível para essas datas
-            </Text>
-          )}
-
-          {quartos.map((quarto) => {
-
-            const qtd = quantidades[quarto.id] || 0;
-
-            return (
-
-              <View key={quarto.id} style={styles.cardQuarto}>
-
-                <Image
-                  source={
-                    quarto.fotos?.length
-                      ? { uri: quarto.fotos[0].url }
-                      : require('../../../assets/images/quartos.jpg')
-                  }
-                  style={styles.imagemQuarto}
-                  resizeMode="cover"
-                />
-
-                <View style={styles.detalhesQuarto}>
-
-                  <Text style={styles.tituloQuarto} numberOfLines={1}>
-                    {quarto.nome}
-                  </Text>
-
-                  <Text style={styles.infoQuarto}>
-                    {quarto.qtd_cama_casal} casal • {quarto.qtd_cama_solteiro} solteiro
-                  </Text>
-
-                  <View style={styles.linhaPreco}>
-
-                    <View style={styles.controleQuantidade}>
-
-                      <TouchableOpacity
-                        style={styles.btnSpin}
-                        onPress={() => atualizarQuantidade(quarto.id, -1)}
-                      >
-                        <Text style={styles.textoBtn}>-</Text>
-                      </TouchableOpacity>
-
-                      <Text style={styles.textoQuantidade}>
-                        {qtd}
-                      </Text>
-
-                      <TouchableOpacity
-                        style={styles.btnSpin}
-                        onPress={() => atualizarQuantidade(quarto.id, 1)}
-                      >
-                        <Text style={styles.textoBtn}>+</Text>
-                      </TouchableOpacity>
-
-                    </View>
-
-                    <View style={styles.containerPreco}>
-
-                      <Text style={styles.precoQuarto}>
-                        R$ {Number(quarto.preco).toFixed(2)}
-                      </Text>
-
-                      <Text style={styles.unidade}>
-                        / noite
-                      </Text>
-
-                    </View>
-
-                  </View>
-
-                </View>
-
-              </View>
-
-            )
-
-          })}
-
+          {quartos.map((quarto) => (
+            <RoomCard
+              key={quarto.id}
+              quarto={quarto}
+              quantidade={quantidades[quarto.id] || 0}
+              onChangeQuantidade={atualizarQuantidade}
+              onAdicionar={adicionarAoCarrinho}
+            />
+          ))}
         </View>
-
       </ScrollView>
 
+      {calendarioAberto && (
+        <Modal visible transparent animationType="fade" onRequestClose={() => setCalendarioAberto(null)}>
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setCalendarioAberto(null)}
+          >
+            <View style={styles.modalContent}>
+              <DateSelector
+                onSelectDate={(data) => {
+                  if (calendarioAberto === 'entrada') setCheckIn(data);
+                  if (calendarioAberto === 'saida') setCheckOut(data);
+                  setCalendarioAberto(null);
+                }}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
+    </AuthContainer>
+  );
+};
 
-      <View style={styles.rodape}>
+interface RoomCardProps {
+  quarto: Quarto;
+  quantidade: number;
+  onChangeQuantidade: (id: number, delta: number) => void;
+  onAdicionar: (quarto: Quarto) => void;
+}
 
-        <View>
-          <Text style={styles.rotuloTotal}>Total</Text>
-          <Text style={styles.valorTotal}>
-            R$ {precoTotal.toFixed(2)}
+const RoomCard: React.FC<RoomCardProps> = ({ quarto, quantidade, onChangeQuantidade, onAdicionar }) => {
+  const podeReservar = quantidade > 0;
+  const foto = quarto.fotos?.[0]?.url;
+
+  return (
+    <View style={styles.roomCard}>
+      <ImageBackground
+        source={foto ? { uri: foto } : require('../../../assets/images/quartos.jpg')}
+        style={styles.roomImage}
+        imageStyle={styles.imageStyle}
+        resizeMode="cover"
+      >
+        <View style={styles.imageOverlay} />
+      </ImageBackground>
+
+      <View style={styles.roomInfo}>
+        <Text style={styles.roomName} numberOfLines={1}>
+          {quarto.nome}
+        </Text>
+
+        <View style={styles.bedsRow}>
+          <Ionicons name="bed-outline" size={14} color="#4b5563" />
+          <Text style={styles.bedsText}>
+            {quarto.qtd_cama_casal} casal • {quarto.qtd_cama_solteiro} solteiro
           </Text>
         </View>
 
-        <TouchableOpacity onPress={handleAddToCart} style={styles.btnReservar}>
-          <Text style={styles.textoReservar}>
-            Reservar agora
+        <View style={styles.actionsRow}>
+          <View style={styles.quantityControls}>
+            <TouchableOpacity
+              style={[styles.btnSpin, quantidade <= 0 && styles.btnSpinDisabled]}
+              onPress={() => onChangeQuantidade(quarto.id, -1)}
+              disabled={quantidade <= 0}
+            >
+              <Text style={styles.spinText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantityDisplay}>{quantidade}</Text>
+            <TouchableOpacity style={styles.btnSpin} onPress={() => onChangeQuantidade(quarto.id, 1)}>
+              <Text style={styles.spinText}>+</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.priceBlock}>
+            <Text style={styles.price}>
+              R$ {Number(quarto.preco).toFixed(0)}
+              <Text style={styles.priceSmall}>,00</Text>
+            </Text>
+            <Text style={styles.priceUnit}>/ noite</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.btnBook, !podeReservar && styles.btnBookDisabled]}
+          onPress={() => onAdicionar(quarto)}
+          disabled={!podeReservar}
+        >
+          <Text style={styles.btnBookText}>
+            {podeReservar ? `Reservar (${quantidade})` : 'Selecionar quantidade'}
           </Text>
         </TouchableOpacity>
-
       </View>
-
-
-      {calendario && (
-
-        <Modal
-          visible
-          transparent
-          animationType="fade"
-          onRequestClose={() => setCalendario(null)}
-        >
-
-          <TouchableOpacity
-            style={styles.overlayModal}
-            activeOpacity={1}
-            onPress={() => setCalendario(null)}
-          >
-
-            <View style={styles.conteudoModal}>
-
-              <DateSelector
-                onSelectDate={(data) => {
-
-                  if (calendario === 'entrada')
-                    setCheckIn(data);
-
-                  if (calendario === 'saida')
-                    setCheckOut(data);
-
-                  setCalendario(null);
-
-                }}
-              />
-
-            </View>
-
-          </TouchableOpacity>
-
-        </Modal>
-
-      )}
-
-    </AuthContainer>
-
+    </View>
   );
-
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  cabecalhoBusca: {
-    backgroundColor: '#0c0c0c',
-    paddingVertical: 20,
+  scroll: { flex: 1, backgroundColor: '#f9fafb' },
+  scrollContent: { paddingBottom: 90 },
+
+  header: {
+    backgroundColor: '#111827',
+    paddingVertical: 16,
     paddingHorizontal: 20,
     alignItems: 'center',
   },
-  tituloCabecalho: {
+  headerTitle: {
     color: '#fff',
     fontSize: 20,
     fontWeight: '700',
   },
-  cardDatas: {
-    backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 24,
-    padding: 16,
-    borderRadius: 12,
+
+  filterCard: {
+    margin: 16,
+    padding: 18,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  tituloDatas: {
+  sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#424242',
-    marginBottom: 12,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 14,
   },
-  wrapperCampo: {
-    position: 'relative',
-  },
-  iconeCampo: {
+  fieldWrapper: { position: 'relative', marginBottom: 14 },
+  fieldIcon: {
     position: 'absolute',
-    right: 12,
-    top: '50%',
-    transform: [{ translateY: -6 }],
-    color: '#666',
+    right: 14,
+    top: 36,
+    color: '#6b7280',
   },
-  secaoHospedes: {
-    marginTop: 8,
-  },
-  rotulo: {
+  guestsSection: { marginBottom: 18 },
+  label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#424242',
-    marginTop: 12,
+    color: '#374151',
     marginBottom: 8,
   },
   btnConsultar: {
-    backgroundColor: '#0c0d0e',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 16,
-  },
-  listaQuartos: {
-    paddingHorizontal: 16,
-  },
-  cardQuarto: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#111827',
+    paddingVertical: 13,
     borderRadius: 12,
-    marginBottom: 12,
+    alignItems: 'center',
+  },
+  btnConsultarText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  roomList: { paddingHorizontal: 16 },
+  noResults: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 15,
+    color: '#6b7280',
+  },
+
+  roomCard: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    marginBottom: 16,
     overflow: 'hidden',
-    minHeight: 100,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.11,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  imagemQuarto: {
-    width: 90,
-    height: '100%',
+  roomImage: {
+    width: SCREEN_WIDTH * 0.38,     
+    height: 180,                    
   },
-  detalhesQuarto: {
+  imageStyle: {
+    borderTopLeftRadius: 14,
+    borderBottomLeftRadius: 14,
+  },
+  imageOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.12)',
+  },
+
+  roomInfo: {
     flex: 1,
-    padding: 10,
+    padding: 12,                   
   },
-  tituloQuarto: {
-    fontSize: 16,
+  roomName: {
+    fontSize: 16,                   
     fontWeight: '700',
-    color: '#212121',
+    color: '#111827',
     marginBottom: 4,
   },
-  linhaInfo: {
+  bedsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 5,
+  },
+  bedsText: {
+    fontSize: 13,
+    color: '#4b5563',
+  },
+  actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 2,
+    marginBottom: 10,
   },
-  infoQuarto: {
-    fontSize: 12,
-    color: '#616161',
-    lineHeight: 16,
-  },
-  linhaPreco: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  controleQuantidade: {
+  quantityControls: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#f3f4f6',
+    borderRadius: 10,
+    paddingHorizontal: 3,
+    paddingVertical: 3,
   },
   btnSpin: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#f5f5f5',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#d1d5db',
   },
-  textoBtn: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#424242',
-  },
-
-    textoBtn2: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+  btnSpinDisabled: { opacity: 0.55 },
+  spinText: { fontSize: 18, fontWeight: '600', color: '#374151' },
+  quantityDisplay: {
+    minWidth: 32,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111827',
   },
 
-  textoQuantidade: {
-    fontSize: 14,
-    marginHorizontal: 10,
-    color: '#212121',
-    fontWeight: '500',
+  priceBlock: { alignItems: 'flex-end' },
+  price: {
+    fontSize: 18,                   
+    fontWeight: '800',
+    color: '#1d4ed8',
   },
-  containerPreco: {
-    alignItems: 'flex-end',
+  priceSmall: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1d4ed8',
   },
-  precoQuarto: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#2c6ee7',
-  },
-  unidade: {
+  priceUnit: {
     fontSize: 11,
-    color: '#757575',
+    color: '#6b7280',
   },
-  rodape: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+  btnBook: {
+    backgroundColor: '#111827',
+    paddingVertical: 10,            
+    borderRadius: 10,
+    marginTop: 15,
     alignItems: 'center',
   },
-  rotuloTotal: {
-    fontSize: 13,
-    color: '#616161',
+  btnBookDisabled: {
+    backgroundColor: '#d1d5db',
   },
-  valorTotal: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#212121',
-  },
-  btnReservar: {
-    backgroundColor: '#050505',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-  },
-  textoReservar: {
-    color: '#fff',
-    fontSize: 15,
+  btnBookText: {
+    color: '#ffffff',
+    fontSize: 14,
     fontWeight: '700',
   },
-  overlayModal: {
+
+  modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.65)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  conteudoModal: {
-    backgroundColor: 'none',
-    borderRadius: 16,
-    width: width * 0.82,
-    maxHeight: '82%',
-
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 10,
+  modalContent: {
+    width: SCREEN_WIDTH * 0.88,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
   },
-
 });
 
 export default RenderExplorer;
-function addReservationToCard(arg0: { quartoId: any; nome: any; qtd_cama_casal: any; qtd_cama_solteiro: any; preco: number; dataInicio: string; dataFim: string; quantidade: number; }) {
-  throw new Error('Function not implemented.');
-}
 
+function addReservationToCard(_payload: ReservationPayload) {
+  console.log('Adicionado ao carrinho:', _payload);
+}
