@@ -23,18 +23,6 @@ const RenderReservations = () => {
       descricao: "Nosso melhor quarto",
       image: require("../../../assets/images/quartos.jpg"),
     },
-    {
-      name: "DeLuxe Premium",
-      price: 200,
-      descricao: "Nosso melhor quarto",
-      image: require("../../../assets/images/quartos2.jpg"),
-    },
-    {
-      name: "Quarto Queen",
-      price: 520,
-      descricao: "Nosso melhor quarto",
-      image: require("../../../assets/images/quartos3.jpg"),
-    },
   ]);
 
   const [selectedRoom, setSelectedRoom] = useState<any>(rooms[0] || null);
@@ -91,7 +79,7 @@ const RenderReservations = () => {
                   descricao={room.descricao}
                   containerStyle={{
                     borderWidth: selectedRoom?.name === room.name ? 2 : 0,
-                    borderColor: "#99999ab4",
+                    borderColor: "#ffffff",
                   }}
                   onPress={() => setSelectedRoom(room)}
                   onDelete={() => handleDeleteRoom(room.name)}

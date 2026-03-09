@@ -30,9 +30,9 @@ type AuthContextProps = {
     cartReservations?: cartReservations[];
     addReservationToCard: (reservation: cartReservations) => void;
     //Remover itens do carrinho
+    removeReservationFromCard: (index: number) => void;
     clearCart: () => void;
-    //Criar ordem do pedido com as reservas 
-    
+
 };
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -46,14 +46,20 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         (async () => {
             try {
                 const storedToken = await AsyncStorage.getItem("token");
+                const storedCart = await AsyncStorage.getItem("cartReservations");
                 if (storedToken) setToken(storedToken);
+                if (storedCart) setCartReservations(JSON.parse(storedCart));
             } finally {
                 setIsLoading(false);
             }
         })();
     }, []);
 
-        async function signIn(email: string, senha: string) {
+    useEffect(() => {
+        AsyncStorage.setItem("cartReservations", JSON.stringify(cartReservations));
+    }, [cartReservations]);
+
+    async function signIn(email: string, senha: string) {
         try {
             const url = `${API_URL}/login`;
             console.log("[LOGIN] URL:", url);
@@ -62,7 +68,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, senha }),  // confirma que é "senha", não "password"
+                body: JSON.stringify({ email, senha }),
             });
 
             console.log("[LOGIN] Status:", res.status);
@@ -86,18 +92,18 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
     async function consulta(inicio: string, fim: string, quantidade: number) {
-        const url = `${API_URL}/quartosDisponiveis`;  
+        const url = `${API_URL}/quartosDisponiveis`;
 
         console.log("[DEBUG] URL consultada (POST):", url);
         console.log("[DEBUG] Body enviado:", { dataInicio: inicio, dataFim: fim, quantidade });
 
         const res = await fetch(url, {
-            method: "POST", 
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                dataInicio: inicio,   
+                dataInicio: inicio,
                 dataFim: fim,
                 quantidade
             }),
@@ -150,15 +156,19 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const addReservationToCard = (reservation: cartReservations) => {
-        // Implementar lógica para adicionar reserva ao carrinho
+        setCartReservations((propsReservations) => [...propsReservations, reservation]);
     };
 
-    const clearCart = () => {
-        // Implementar lógica para limpar o carrinho
+    const removeReservationFromCard = (index: number) => {
+        setCartReservations((propsReservations) => propsReservations.filter((_, i) => i !== index));
+
     }
 
+    const clearCart = () => {
+        setCartReservations([]);
+    }
 
-    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut, consulta, addReservationToCard, clearCart }), [token, isLoading]);
+    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut, consulta, addReservationToCard, clearCart, removeReservationFromCard }), [token, isLoading, cartReservations]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
