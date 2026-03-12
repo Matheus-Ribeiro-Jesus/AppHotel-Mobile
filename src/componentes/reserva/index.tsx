@@ -1,49 +1,75 @@
 import {
-  Text,
-  TouchableOpacity,
-  View,
+  Alert,
   Dimensions,
   ScrollView,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-import AuthContainer from "../ui/AuthContainer";
 import InfoReserva from "@/componentes/ui/InfoReservar";
+import { CartReservation, useAuth } from "@/contexts/AuthContext";
+import React, { useMemo, useState } from "react";
+import AuthContainer from "../ui/AuthContainer";
 import RenderRoomCard from "../ui/RoomCard";
-import React, { useState } from "react";
 
 const RenderReservations = () => {
   const { width } = Dimensions.get("window");
 
-  // Lista de quartos
-  const [rooms, setRooms] = useState([
-    {
-      name: "DeLuxe",
-      price: 200,
-      descricao: "Nosso melhor quarto",
-      image: require("../../../assets/images/quartos.jpg"),
-    },
-  ]);
+  const { cartReservations = [], removeReservationFromCard, createOrder } = useAuth();
 
-  const [selectedRoom, setSelectedRoom] = useState<any>(rooms[0] || null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-  const days = 2;
-  const total = selectedRoom ? selectedRoom.price * days : 0;
+  const rooms: CartReservation[] = cartReservations;
+  const selectedRoom = rooms[selectedIndex] || null;
 
-  const handleDeleteRoom = (roomName: string) => {
-    const updatedRooms = rooms.filter((room) => room.name !== roomName);
-
-    setRooms(updatedRooms);
-
-    // Se não sobrou nenhum quarto
-    if (updatedRooms.length === 0) {
-      setSelectedRoom(null);
-      return;
+  const difDias = (inicio: string, fim: string) => {
+    try {
+      const d1 = new Date(inicio);
+      const d2 = new Date(fim);
+      const diff = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
+      return diff > 0 ? diff : 1;
+    } catch {
+      return 1;
     }
+  };
 
-    // Se deletou o quarto selecionado
-    if (selectedRoom?.name === roomName) {
-      setSelectedRoom(updatedRooms[0]);
+  const formatDayMonth = (iso: string) => {
+    try {
+      const d = new Date(iso);
+      const day = d.getDate();
+      const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      return `${day} ${monthNames[d.getMonth()]}`;
+    } catch {
+      return '';
+    }
+  };
+
+  const total = useMemo(() => {
+    return rooms.reduce((soma, r) => {
+      const dias = difDias(r.dataInicio, r.dataFim);
+      return soma + r.preco * r.quantidade * dias;
+    }, 0);
+  }, [rooms]);
+
+  const handleDeleteRoom = (index: number) => {
+    removeReservationFromCard(index);
+    setSelectedIndex((prev) => {
+      const newLen = rooms.length - 1;
+      if (prev >= newLen) {
+        return Math.max(0, newLen - 1);
+      }
+      return prev;
+    });
+  };
+
+  const handleCheckout = async () => {
+    try {
+      await createOrder('pix');
+      Alert.alert('Sucesso', 'Pedido criado com sucesso!');
+    } catch (err: any) {
+      Alert.alert('Erro', err?.message || 'Falha ao criar pedido');
     }
   };
 
@@ -64,29 +90,33 @@ const RenderReservations = () => {
         <View style={styles.infoWrapper}>
           <Text style={styles.sectionTitle}>Quartos Reservados</Text>
 
-          <View style={styles.quartosContainer}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.quartosContent}
-            >
-              {rooms.map((room) => (
-                <RenderRoomCard
-                  key={room.name}
-                  image={room.image}
-                  name={room.name}
-                  price={room.price}
-                  descricao={room.descricao}
-                  containerStyle={{
-                    borderWidth: selectedRoom?.name === room.name ? 2 : 0,
-                    borderColor: "#ffffff",
-                  }}
-                  onPress={() => setSelectedRoom(room)}
-                  onDelete={() => handleDeleteRoom(room.name)}
-                />
-              ))}
-            </ScrollView>
-          </View>
+          {rooms.length === 0 ? (
+            <Text style={[styles.infoText, { marginTop: 10 }]}>Carrinho vazio</Text>
+          ) : (
+            <View style={styles.quartosContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.quartosContent}
+              >
+                {rooms.map((room, idx) => (
+                  <RenderRoomCard
+                    key={`${room.quartoId}-${idx}`}
+                    image={require("../../../assets/images/quartos.jpg")}
+                    name={room.nome}
+                    price={room.preco}
+                    descricao={`Quantidade: ${room.quantidade}`}
+                    containerStyle={{
+                      borderWidth: selectedIndex === idx ? 2 : 0,
+                      borderColor: "#ffffff",
+                    }}
+                    onPress={() => setSelectedIndex(idx)}
+                    onDelete={() => handleDeleteRoom(idx)}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          )}
         </View>
 
         {/* Datas */}
@@ -96,10 +126,10 @@ const RenderReservations = () => {
           <View style={styles.dateCard}>
             <View style={styles.dateInner}>
               <InfoReserva
-                dateCheckin="10/12/2024"
-                dateCheckout="14/12/2024"
-                dayMonthIn="10 Dez"
-                dayMonthOut="14 Dez"
+                dateCheckin={selectedRoom?.dataInicio || ''}
+                dateCheckout={selectedRoom?.dataFim || ''}
+                dayMonthIn={selectedRoom ? formatDayMonth(selectedRoom.dataInicio) : ''}
+                dayMonthOut={selectedRoom ? formatDayMonth(selectedRoom.dataFim) : ''}
               />
             </View>
           </View>
@@ -119,7 +149,7 @@ const RenderReservations = () => {
 
             <Text style={styles.infoText}>
               {selectedRoom
-                ? `${selectedRoom.name} • ${days} noites`
+                ? `${selectedRoom.nome} • ${difDias(selectedRoom.dataInicio, selectedRoom.dataFim)} noites`
                 : "Nenhum quarto selecionado"}
             </Text>
 
@@ -131,7 +161,11 @@ const RenderReservations = () => {
 
         {/* Botão */}
         <View style={styles.buttonWrapper}>
-          <TouchableOpacity style={[styles.button, { width: width * 0.85 }]}>
+          <TouchableOpacity
+            style={[styles.button, { width: width * 0.85 }]}
+            onPress={handleCheckout}
+            disabled={rooms.length === 0}
+          >
             <Text style={styles.buttonText}>Finalizar Reserva</Text>
           </TouchableOpacity>
         </View>

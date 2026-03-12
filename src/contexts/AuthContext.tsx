@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 
-type cartReservations = {
+export type CartReservation = {
     quartoId: number;
     nome: string;
     qtd_cama_casal: number;
@@ -27,11 +27,12 @@ type AuthContextProps = {
     }) => Promise<void>;
     signOut: () => Promise<void>;
     consulta: (inicio: string, fim: string, quantidade: number) => Promise<any>;
-    cartReservations?: cartReservations[];
-    addReservationToCard: (reservation: cartReservations) => void;
+    cartReservations?: CartReservation[];
+    addReservationToCard: (reservation: CartReservation) => void;
     //Remover itens do carrinho
     removeReservationFromCard: (index: number) => void;
     clearCart: () => void;
+    createOrder: (pagamento: string) => Promise<void>;
 
 };
 
@@ -40,7 +41,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [cartReservations, setCartReservations] = useState<cartReservations[]>([]);
+    const [cartReservations, setCartReservations] = useState<CartReservation[]>([]);
 
     useEffect(() => {
         (async () => {
@@ -58,6 +59,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         AsyncStorage.setItem("cartReservations", JSON.stringify(cartReservations));
     }, [cartReservations]);
+
+
 
     async function signIn(email: string, senha: string) {
         try {
@@ -85,12 +88,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             await AsyncStorage.setItem("token", tokenAPI);
             setToken(tokenAPI);
 
-            return tokenAPI; // opcional
+            return tokenAPI;
+
         } catch (err) {
             console.error("[LOGIN] Erro completo:", err);
             throw err;
         }
     }
+
     async function consulta(inicio: string, fim: string, quantidade: number) {
         const url = `${API_URL}/quartosDisponiveis`;
 
@@ -125,6 +130,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log("[DEBUG] Dados retornados pelo backend:", data);
         return data;
     }
+
     async function signUp({ nome, cpf, telefone, email, senha }: { nome: string; cpf: string; telefone: string; email: string; senha: string; }) {
         const cleanCpf = cpf.replace(/\D/g, "");
         const cleanTelefone = telefone.replace(/\D/g, "");
@@ -155,7 +161,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(null);
     }
 
-    const addReservationToCard = (reservation: cartReservations) => {
+    const addReservationToCard = (reservation: CartReservation) => {
         setCartReservations((propsReservations) => [...propsReservations, reservation]);
     };
 
@@ -168,7 +174,52 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setCartReservations([]);
     }
 
-    const value = useMemo(() => ({ token, isLoading, signIn, signUp, signOut, consulta, addReservationToCard, clearCart, removeReservationFromCard }), [token, isLoading, cartReservations]);
+    const createOrder = async (pagamento: string ) => {
+        if(!token) throw new Error("Usuário não autenticado");
+        if(cartReservations.length === 0) {
+            throw new Error("Carrinho vazio");
+        }
+
+        const quartos = cartReservations.map((item) => ({
+            quartoId: item.quartoId,
+            dataInicio: item.dataInicio,
+            dataFim: item.dataFim,
+            quantidade: item.quantidade
+        }));
+
+        const res = await fetch(`${API_URL}/reserva`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                pagamento,
+                quartos
+            }),
+        });
+        const result = await res.json().catch(() => null);
+
+        if (!res.ok) {
+            throw new Error("Falha ao criar pedido");
+        }
+
+        clearCart();
+    }
+
+    const value = useMemo(() => ({
+        token,
+        isLoading,
+        signIn,
+        signUp,
+        signOut,
+        consulta,
+        cartReservations,
+        addReservationToCard,
+        clearCart,
+        removeReservationFromCard,
+        createOrder,
+    }), [token, isLoading, cartReservations]);
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

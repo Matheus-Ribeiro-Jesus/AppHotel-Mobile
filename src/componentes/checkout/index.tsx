@@ -1,11 +1,18 @@
-import React from 'react';
-import { ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import React from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { CartReservation } from '@/contexts/AuthContext';
 import AuthContainer from '../ui/AuthContainer';
 
-const RenderCheckout = () => {
+interface CheckoutProps {
+  cart?: CartReservation[];
+}
+
+const RenderCheckout: React.FC<CheckoutProps> = ({ cart = [] }) => {
+  const item = cart[0];
+
   return (
     <AuthContainer
       SafeArea2={{ backgroundColor: '#fff' }}
@@ -19,77 +26,28 @@ const RenderCheckout = () => {
         <View style={styles.container}>
           <View style={styles.hotelCard}>
             <Image
-              source={require('../../../assets/images/quartos.jpg')}
+              source={
+                item
+                  ? require('../../../assets/images/quartos.jpg')
+                  : require('../../../assets/images/quartos.jpg')
+              }
               style={styles.roomImage}
               resizeMode="cover"
             />
             <View style={styles.details}>
-              <Text style={styles.title}>Quarto - Transilvânia</Text>
-              <Text style={styles.location}>⚲ Rua das Sombras, 13 - Castelo Assombrado</Text>
-              <Text style={styles.price}>R$ 250,00 / Noite</Text>
+              <Text style={styles.title}>
+                {item ? item.nome : 'Quarto - Transilvânia'}
+              </Text>
+              <Text style={styles.location}>
+                ⚲ Rua das Sombras, 13 - Castelo Assombrado
+              </Text>
+              <Text style={styles.price}>
+                R$ {item ? item.preco : 250},00 / Noite
+              </Text>
             </View>
           </View>
 
-          <View style={styles.reservaSection}>
-            <Text style={styles.tituloSecao}>Sua Reserva</Text>
-
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="calendar-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Data</Text>
-              </View>
-              <Text style={styles.valor}>12-14 Agosto 2026</Text>
-            </View>
-
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="people-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Hóspedes</Text>
-              </View>
-              <Text style={styles.valor}>2 Hóspedes (1 Quarto)</Text>
-            </View>
-
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="call-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Telefone</Text>
-              </View>
-              <Text style={styles.valor}>02134345646</Text>
-            </View>
-
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="reader-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Tipo do Quarto</Text>
-              </View>
-              <Text style={styles.valor}>Queen Room</Text>
-            </View>
-          </View>
-
-          <View style={styles.detalhe}>
-            <Text style={styles.textDetalhe}>Detalhe do Preço</Text>
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="calendar-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Preço</Text>
-              </View>
-              <Text style={styles.valor}>R$ 139,00</Text>
-            </View>
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="calendar-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Taxa de Administração</Text>
-              </View>
-              <Text style={styles.valor}>R$ 2,50</Text>
-            </View>
-            <View style={styles.linha}>
-              <View style={styles.labelWrapper}>
-                <Ionicons name="calendar-outline" size={20} color="#666" style={styles.icone} />
-                <Text style={styles.label}>Preço Total</Text>
-              </View>
-              <Text style={styles.valor}>R$ 141,50</Text>
-            </View>
-          </View>
+          {/* reserva / preços descritivos poderiam ser dinamizados aqui */}
         </View>
       </ScrollView>
     </AuthContainer>

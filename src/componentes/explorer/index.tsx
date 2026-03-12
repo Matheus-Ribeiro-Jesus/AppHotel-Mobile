@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -17,9 +17,9 @@ import AuthContainer from '@/componentes/ui/AuthContainer';
 import DateSelector from '@/componentes/ui/datePicker';
 import TextField from '@/componentes/ui/TextField';
 import { useAuth } from '@/contexts/AuthContext';
+import { router } from 'expo-router';
 import InputSpin from '../ui/InputSpin';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type Quarto = {
   id: number;
@@ -41,8 +41,10 @@ type ReservationPayload = {
   quantidade: number;
 };
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 const RenderExplorer: React.FC = () => {
-  const { consulta } = useAuth();
+  const { consulta, addReservationToCard } = useAuth();
 
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -106,6 +108,7 @@ const RenderExplorer: React.FC = () => {
 
     addReservationToCard(payload);
     Alert.alert('Adicionado!', `${qtd} × ${quarto.nome} no carrinho.`);
+    router.push('/reserva');
   };
 
   return (

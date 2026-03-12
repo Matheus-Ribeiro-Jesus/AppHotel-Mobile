@@ -35,7 +35,7 @@ const InfoReserva = ({ dateCheckin, dateCheckout, dayMonthIn, dayMonthOut }: Pro
     <View style={{ marginVertical: 12 }}>
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <DateCircle label="Check-in" date={dayMonthIn} />
+        <Text>Check-out</Text>
 
         <View style={infoReservar.content}>
           <Image
@@ -49,7 +49,7 @@ const InfoReserva = ({ dateCheckin, dateCheckout, dayMonthIn, dayMonthOut }: Pro
       </View>
 
       <View style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}>
-        <DateCircle label="Check-out" date={dayMonthOut} />
+        <Text>Check-out</Text>
 
         <View style={infoReservar.content}>
           <Image
